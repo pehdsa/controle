@@ -4,6 +4,13 @@
 	--danger-color: #EB5757;
 	--danger-color-hover: #ee7575;
 	--border-color: rgba(0,0,0,.1);
+	--default-color: #313233;
+	--default-color-8: #595a5a;
+	--default-color-6: #818182;
+	--default-color-4: #a8a9a9;
+	--default-color-2: #d0d0d1;
+	--default-color-1: #e4e4e4;
+
 	--base-background-color: #ECF0F3;
 	--header-background-color:#1090AC;
 	--header-height: 64px;
@@ -20,7 +27,7 @@ body {
     -webkit-font-smoothing: antialiased !important;    
 	
     overflow-x: hidden !important; 
-	color: var(--color-base);	
+	color: var(--default-color);	
 }
 
 img { display: block;max-width: 100%;height: auto; } 
@@ -40,10 +47,10 @@ b, strong { font-weight: bold !important; }
 .topo h1 { text-transform: uppercase; }
 .topo-left { width: 64px; }
 .topo-right { width: 64px; }
-.conteudo { position: relative;z-index: 5; }
+.conteudo { position: relative;min-height: 100%;z-index: 5;flex-grow: 1; }
 
-.menu { width: 90%;height: 100%;overflow-y: auto; }
-.menu a { color: rgba(0, 0, 0, .5);display: block;padding: 15px 10px 15px 14px;transition: all .3s ease;font-weight: 500;  }
+.menu { width: var(--menu-width);height: 100%;overflow-y: auto; }
+.menu a { color: var(--default-color-8);display: block;padding: 15px 10px 15px 14px;transition: all .3s ease;font-family: 'Montserrat', sans-serif;font-weight: 500;  }
 .menu a:hover { color: var(--primary-color); background-color: #f8f8f8; }
 .menu a.active { color: var(--primary-color); padding: 15px 10px;border-left: 4px solid var(--primary-color); }
 
@@ -95,6 +102,13 @@ b, strong { font-weight: bold !important; }
 .black-color-50 { color: rgba(0, 0, 0, .5) !important; }
 .black-color-30 { color: rgba(0, 0, 0, .3) !important; }
 
+.default-color { color: var(--default-color); }
+.default-color-8 { color: var(--default-color-8); }
+.default-color-6 { color: var(--default-color-6); }
+.default-color-4 { color: var(--default-color-4); }
+.default-color-2 { color: var(--default-color-2); }
+.default-color-1 { color: var(--default-color-1); }
+
 .primary-bg { background-color: var(--primary-color); }
 .white-bg { background-color: #FFFFFF; }
 
@@ -120,11 +134,13 @@ b, strong { font-weight: bold !important; }
 
 .tabela > table > tbody > tr.desativado > td td { border-color: #d4d4d4 !important; }
 
+.actions-container { position: fixed;bottom: 0;right: 0;z-index: 50; }
+.actions-container button { border-radius: 50%;box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12); }
+.actions-container button.adicionar { background-color: #28a745 !important; }
+.actions-container button.filtrar { background-color: #007bff !important; }
 
 @media (min-width: 768px) { /* COL MD */
-
-	.menu { width: var(--menu-width); }
-
+#007bff!important
 	.font-md-11 { font-size:.6875rem !important; /* 11px */ }
 	.font-md-13 { font-size:.8125rem !important; /* 13px */ }
 	.font-md-14 { font-size:.875rem !important; /* 14px */ }

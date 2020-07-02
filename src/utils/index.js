@@ -1,7 +1,7 @@
 //import React from 'react';
 import axios from 'axios';
 
-const apiUrl = "https://dev.empet.com.br/webservice/";
+const apiUrl = "https://controle.empet.com.br/webservice/";
 const baseSite = "https://www.empet.com.br/";
 
 const api = axios.create({    

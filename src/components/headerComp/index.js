@@ -50,13 +50,13 @@ function HeaderComp(props) {
             <Drawer open={ drawerOpen } onClose={() => setDrawerOpen(false)} >
                 <aside className="menu">
 
-                    <NavLink to="/" className="d-flex align-items-center font-16" activeClassName="active" exact >
+                    <NavLink to="/" className="d-flex align-items-center font-14" activeClassName="active" exact >
                         <FiClipboard size={ 20 } className="mr-2" />Pedidos
                     </NavLink>
-                    <NavLink to="/produtos" className="d-flex align-items-center font-16" activeClassName="active" exact >
+                    <NavLink to="/produtos" className="d-flex align-items-center font-14" activeClassName="active" exact >
                         <FiShoppingBag size={ 20 } className="mr-2" />Produtos
                     </NavLink>
-                    <NavLink to="/revendedores" className="d-flex align-items-center font-16" activeClassName="active" exact >
+                    <NavLink to="/revendedores" className="d-flex align-items-center font-14" activeClassName="active" exact >
                         <FiUser size={ 20 } className="mr-2" />Revendedores
                     </NavLink>
 
