@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { MdRemoveRedEye, MdEdit, MdDelete } from "react-icons/md";
-import { IconButton, Button } from '@material-ui/core/';
-import { Table, TableContainer, TableBody, TableHead, TableRow, TableCell } from '@material-ui/core/';
+import { 
+    IconButton, 
+    Button,
+    Table, 
+    TableContainer, 
+    TableBody, 
+    TableHead, 
+    TableRow, 
+    TableCell
+} from '@material-ui/core/';
 
 import HeaderComp from '../../components/headerComp';
 import ActionsComp from '../../components/actionsComp';
@@ -9,16 +17,30 @@ import { existsOrError } from '../../utils';
 
 function Pedidos() {
 
-    const [ pedidos, setPedidos ] = useState([]);
+    const [ pedidos, setPedidos ] = useState([
+        { 
+            id: 1, 
+            revendedor: 0, 
+            valor: 200.00, 
+            desconto: 0,
+            produtos: [
+                { 
+                    id: 1, 
+                }
+            ]
+        }
+    ]);
 
-    const [ selecionado, setSelecionado ] = useState([]);
+    const [ selecionado, setSelecionado ] = useState({});
 
     return (
         <React.Fragment>
             
             <HeaderComp title="Pedidos" />
 
-            { !existsOrError(selecionado) ? (
+
+
+            { !existsOrError(pedidos) ? (
                 <main className="conteudo d-flex flex-column justify-content-center align-items-center container py-3">
                     <div className="default-color-4 mb-2">Nenhum item cadastrado</div>
                     <Button className="font-12" variant="contained" >Adicionar item</Button>

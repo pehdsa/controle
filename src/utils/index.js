@@ -1,5 +1,7 @@
 //import React from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+
 
 const apiUrl = "https://controle.empet.com.br/webservice/";
 const baseSite = "https://www.empet.com.br/";
@@ -13,17 +15,49 @@ const apiRequest = async (type, params) => {
     const result = await api.post('',{
         request: [{ acao: type , params }]
     }).then(resp => {  
-        if (Object.keys(resp.data).includes('erro')) {
-            alert('Oops...', resp.data.status);
+        if (Object.keys(resp.data).includes('erro')) {            
+            toast.error(resp.data.status, {
+                position: toast.POSITION.BOTTOM_RIGHT,
+                //className: 'foo-bar',
+                autoClose: 5000
+            });
             return false;
         } else {
             return resp.data;
         }            
     }).catch(e => {   
-        alert('Oops...', 'Ocorreu um erro inesperado, tente novamente mais tarde.');         
+        toast.error(resp.data.status, {
+            position: toast.POSITION.BOTTOM_RIGHT,
+            //className: 'foo-bar',
+            autoClose: 5000
+        });       
         return false;
     });
     return result;
+}
+
+const notify = (tipo, mensagem) => {
+
+    if (tipo === 'sucesso') {
+        toast.success(mensagem, {
+            position: toast.POSITION.BOTTOM_RIGHT,
+            //className: 'foo-bar',
+            autoClose: 5000
+        });            
+    } else if (tipo === 'erro') {
+        toast.error(mensagem, {
+            position: toast.POSITION.BOTTOM_RIGHT,
+            //className: 'foo-bar',
+            autoClose: 5000
+        });
+    } else if (tipo === 'aviso') {
+        toast.warn(mensagem, {
+            position: toast.POSITION.BOTTOM_RIGHT,
+            //className: 'foo-bar' ,
+            autoClose: 5000
+        });
+    }
+
 }
 
 
@@ -46,5 +80,6 @@ export {
     moneyFormatter,     
     existsOrError, 
     baseSite,
-    apiRequest
+    apiRequest,
+    notify
 }

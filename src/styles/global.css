@@ -44,7 +44,7 @@ b, strong { font-weight: bold !important; }
 
 #root { position: relative;min-height: 100vh;background-color: var(--base-background-color);padding-top: var(--header-height); } 
 .topo { position: fixed;top: 0;left: 0;width: 100%;height: var(--header-height);background-color: var(--header-background-color);box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);z-index: 10; }
-.topo h1 { text-transform: uppercase; }
+.topo h1 { font-family: 'Montserrat', sans-serif;font-weight: 500; }
 .topo-left { width: 64px; }
 .topo-right { width: 64px; }
 .conteudo { position: relative;min-height: 100%;z-index: 5;flex-grow: 1; }
