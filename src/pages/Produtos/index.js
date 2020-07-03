@@ -192,7 +192,7 @@ function Produtos() {
                                     />
 
                                     <div className="d-flex pt-3 justify-content-center align-items-center">
-                                        <Button variant="outlined" size="large" className="mx-2" onClick={() => handleCancel()}>Cancelar</Button>
+                                        <Button variant="outlined" size="large" className="mx-2" onClick={() => !existsOrError(loading) && handleCancel()}>Cancelar</Button>
                                         <Button onClick={() => !existsOrError(loading) && handleSubmit()} variant="contained" className="btn-primary mx-2" size="large">
                                             { existsOrError(loading) ? (
                                                 <CircularProgress size={ 22 } thickness={ 4 } color="white" />
@@ -224,16 +224,20 @@ function Produtos() {
                                                 <Table>
                                                     <TableHead>
                                                         <TableRow>
-                                                            <TableCell>Nome</TableCell>
-                                                            <TableCell width="30%" align="right">Ações</TableCell>                            
+                                                            <TableCell align="left">Nome</TableCell>
+                                                            <TableCell align="center">Preço</TableCell>
+                                                            <TableCell align="center">Preço Revendedor</TableCell>
+                                                            <TableCell align="center" width="30%">Ações</TableCell>                            
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
                                                         { produtos.map((item, index) => {
                                                             return (
                                                                 <TableRow key={ index }>
-                                                                    <TableCell className="font-16"><b>{ item.nome }</b></TableCell>
-                                                                    <TableCell align="right">
+                                                                    <TableCell align="left" className="font-16"><b>{ item.nome }</b></TableCell>
+                                                                    <TableCell align="center">R$ { moneyFormatter(item.valorpadrao) }</TableCell>
+                                                                    <TableCell align="center">R$ { moneyFormatter(item.valorrevendedor) }</TableCell>
+                                                                    <TableCell align="center">
                                                                         <IconButton onClick={() => {}}>
                                                                             <MdRemoveRedEye size={ 20 } className="black-color-30" />
                                                                         </IconButton>
@@ -253,11 +257,7 @@ function Produtos() {
                                             </TableContainer>
                                         </main>
 
-                                        <ActionsComp 
-                                            search={ true }
-                                            callbackSearch={() => alert('search')}
-                                            filter={ true }
-                                            callbackFilter={() => alert('filter')}
+                                        <ActionsComp                                             
                                             callbackAdd={() => setEdit(true)}
                                         />
                                     </>
