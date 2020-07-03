@@ -10,7 +10,8 @@ import {
     TableHead, 
     TableRow, 
     TableCell,
-    TextField 
+    TextField,
+    CircularProgress
 } from '@material-ui/core/';
 import NumberFormat from 'react-number-format';
 
@@ -38,7 +39,7 @@ function NumberFormatCustom(props) {
         thousandSeparator="." 
         decimalSeparator=","
         isNumericString
-        prefix="R$ "
+        //prefix="R$ "
         />
     );
 }
@@ -56,6 +57,7 @@ function Produtos() {
 
     const [ pageSkeleton, setPageSkeleton ] = useState(true);
     const [ edit, setEdit ] = useState(false);
+    const [ loading, setLoading ] = useState(false);
 
     const [ formulario, setFormulario ] = useState({
         id: "",
@@ -97,6 +99,37 @@ function Produtos() {
         setEdit(false)
     }
 
+    function handleSubmit() {
+        setLoading(true);
+        if (
+            !existsOrError(formulario.nome) || 
+            !existsOrError(formulario.valorpadrao) || 
+            !existsOrError(formulario.valorrevendedor)
+        ) {
+            const camposinvalidos = {
+                nome: existsOrError(formulario.nome) ? true : false,
+                valorpadrao: existsOrError(formulario.valorpadrao) ? true : false,
+                valorrevendedor: existsOrError(formulario.valorrevendedor) ? true : false
+            }
+            setValidate({...validate, ...camposinvalidos});
+            setLoading(false);            
+            notify('erro', 'Digite todos os campos');
+            return false;        
+        }
+        handleRegister();
+    }
+
+    async function handleRegister() {
+        const result = existsOrError(formulario.id) ? await apiRequest('atualizarproduto', formulario) : await apiRequest('inserirproduto', formulario);
+        if (result) {            
+            setProdutos([ result, ...produtos ])
+            handleCancel();
+            setLoading(false);
+        } else {
+            setLoading(false);
+        }
+    }
+
     return (
         <React.Fragment>
             
@@ -104,9 +137,9 @@ function Produtos() {
 
             {
                 existsOrError(pageSkeleton) ? (
-                    <div>
+                    <main className="conteudo d-flex flex-column justify-content-center align-items-center container py-3">
                         <Skeleton width={ 120 } height={ 10 } />
-                    </div>
+                    </main>
                 ) : (
                     <>
                         { existsOrError(edit) ? (
@@ -124,7 +157,7 @@ function Produtos() {
                                         fullWidth
                                         required
                                         error={ !validate.nome }
-                                        onChange={event => setFormulario({ nome: event.target.value })}
+                                        onChange={event => setFormulario({ ...formulario, nome: event.target.value })}
                                         value={ formulario.nome }
                                         className="mb-3"
                                     />
@@ -135,7 +168,7 @@ function Produtos() {
                                         fullWidth
                                         required
                                         error={ !validate.valorpadrao }
-                                        onChange={event => setFormulario({ valorpadrao: event.target.value })}
+                                        onChange={event => setFormulario({ ...formulario, valorpadrao: event.target.value })}
                                         value={ formulario.valorpadrao }
                                         className="mb-3"
                                         InputProps={{
@@ -150,7 +183,7 @@ function Produtos() {
                                         fullWidth
                                         required
                                         error={ !validate.valorrevendedor }
-                                        onChange={event => setFormulario({ valorrevendedor: event.target.value })}
+                                        onChange={event => setFormulario({ ...formulario, valorrevendedor: event.target.value })}
                                         value={ formulario.valorrevendedor }
                                         className="mb-3"
                                         InputProps={{
@@ -160,8 +193,15 @@ function Produtos() {
 
                                     <div className="d-flex pt-3 justify-content-center align-items-center">
                                         <Button variant="outlined" size="large" className="mx-2" onClick={() => handleCancel()}>Cancelar</Button>
-                                        <Button variant="contained" className="btn-primary mx-2" size="large">
-                                            { existsOrError(formulario.id) ? 'Editar' : 'Cadastrar' }
+                                        <Button onClick={() => !existsOrError(loading) && handleSubmit()} variant="contained" className="btn-primary mx-2" size="large">
+                                            { existsOrError(loading) ? (
+                                                <CircularProgress size={ 22 } thickness={ 4 } color="white" />
+                                            ) : (
+                                                <>
+                                                     { existsOrError(formulario.id) ? 'Editar' : 'Cadastrar' }
+                                                </>
+                                            ) }
+                                           
                                         </Button>
                                     </div>
 
@@ -218,7 +258,7 @@ function Produtos() {
                                             callbackSearch={() => alert('search')}
                                             filter={ true }
                                             callbackFilter={() => alert('filter')}
-                                            callbackAdd={() => alert('add')}
+                                            callbackAdd={() => setEdit(true)}
                                         />
                                     </>
                                 ) }
