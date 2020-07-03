@@ -26,14 +26,14 @@ const apiRequest = async (type, params) => {
             return resp.data;
         }            
     }).catch(e => {   
-        toast.error(resp.data.status, {
+        toast.error('Ocorreu um erro inesperado, tente novamente mais tarde', {
             position: toast.POSITION.BOTTOM_RIGHT,
             //className: 'foo-bar',
             autoClose: 5000
         });       
         return false;
     });
-    return result;
+    return result; 
 }
 
 const notify = (tipo, mensagem) => {

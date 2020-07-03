@@ -47,7 +47,7 @@ function Pedidos() {
                 </main>
             ) : (
                 <>
-                <main className="conteudo container py-3">
+                <main className="conteudo container py-5">
                     <TableContainer className="tabela">
                         <Table>
                             <TableHead>
