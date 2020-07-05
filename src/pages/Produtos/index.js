@@ -11,7 +11,14 @@ import {
     TableRow, 
     TableCell,
     TextField,
-    CircularProgress
+    CircularProgress,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    FormControlLabel,
+    Switch
 } from '@material-ui/core/';
 import NumberFormat from 'react-number-format';
 
@@ -58,12 +65,16 @@ function Produtos() {
     const [ pageSkeleton, setPageSkeleton ] = useState(true);
     const [ edit, setEdit ] = useState(false);
     const [ loading, setLoading ] = useState(false);
+    const [ loadingCancel, setLoadingCancel ] = useState(false);
+
+    const [ deleteMessage, setDeleteMessage ] = useState(false);
 
     const [ formulario, setFormulario ] = useState({
         id: "",
         nome: "",
         valorpadrao: "",  
         valorrevendedor: "",
+        comtamanho: "0"
     });
     const [ validate, setValidate ] = useState({
         nome: true,
@@ -85,18 +96,31 @@ function Produtos() {
         }
     }
 
-    function handleForm(value) {
-        setFormulario({ ...formulario, value });
-    }
-
-    function handleEdit() {
+    function handleInsert() {
         setEdit(true);
     }
 
+    function handleEdit(item) {
+        setFormulario({ ...item });
+        setEdit(true);
+    }
+
+    function handleDelete(item) {
+        setFormulario({ ...item });
+        setDeleteMessage(true);
+    }
+
     function handleCancel() {
-        setFormulario({ id: "", nome: "", valorpadrao: "", valorrevendedor: "", });
+        setFormulario({ id: "", nome: "", valorpadrao: "", valorrevendedor: "", comtamanho: "0" });
         setValidate({ nome: true, valorpadrao: true, valorrevendedor: true, });
-        setEdit(false)
+        edit && setEdit(false);
+    }
+
+    function handleClose() {
+        if (!loadingCancel) {
+            handleCancel();
+            setDeleteMessage(false);
+        }
     }
 
     function handleSubmit() {
@@ -119,10 +143,37 @@ function Produtos() {
         handleRegister();
     }
 
+    async function handleConfirmDelete(){
+        setLoadingCancel(true);
+        const result = await apiRequest('deletarproduto', { id: formulario.id});
+        if (result) {  
+            const newProducts = produtos.filter(item => item.id != formulario.id);          
+            setProdutos(newProducts);
+            handleClose();
+            handleCancel();
+            setLoadingCancel(false);
+        } else {
+            handleClose();
+            setLoadingCancel(false);
+        }
+    }
+
     async function handleRegister() {
-        const result = existsOrError(formulario.id) ? await apiRequest('atualizarproduto', formulario) : await apiRequest('inserirproduto', formulario);
+        const result = existsOrError(formulario.id) ? await apiRequest('alterarproduto', formulario) : await apiRequest('inserirproduto', formulario);
         if (result) {            
-            setProdutos([ result, ...produtos ])
+            if(!existsOrError(formulario.id)) {
+                setProdutos([ result, ...produtos ])
+            } else {
+                const produtosEditados = [];
+                produtos.forEach(item => {
+                    if(item.id == formulario.id) {
+                        produtosEditados.push({ ...result })
+                    } else {
+                        produtosEditados.push({ ...item });
+                    }
+                });
+                setProdutos(produtosEditados);
+            }
             handleCancel();
             setLoading(false);
         } else {
@@ -148,7 +199,7 @@ function Produtos() {
 
                                     <header class="d-flex justify-content-between align-items-center border-bottom mb-5 pb-3">
                                         <h2 className="font-18 default-color-8" >Adicionar produto</h2>
-                                    </header>
+                                    </header>                                    
                                     
                                     <TextField 
                                         autoFocus
@@ -191,6 +242,17 @@ function Produtos() {
                                         }}
                                     />
 
+                                    <FormControlLabel
+                                        control={
+                                            <Switch 
+                                                checked={ formulario.comtamanho === "1" ? true : false} 
+                                                onChange={() => setFormulario({ ...formulario, comtamanho: formulario.comtamanho === "1" ? "0" : "1" })} 
+                                                name="comtamanho" 
+                                            />
+                                        }
+                                        label="Com Tamanho"
+                                    />
+
                                     <div className="d-flex pt-3 justify-content-center align-items-center">
                                         <Button variant="outlined" size="large" className="mx-2" onClick={() => !existsOrError(loading) && handleCancel()}>Cancelar</Button>
                                         <Button onClick={() => !existsOrError(loading) && handleSubmit()} variant="contained" className="btn-primary mx-2" size="large">
@@ -213,7 +275,7 @@ function Produtos() {
                             
                                     <main className="conteudo d-flex flex-column justify-content-center align-items-center container py-3">
                                         <div className="default-color-4 mb-3">Nenhum item cadastrado</div>
-                                        <Button className="font-12" variant="contained" onClick={handleEdit} >Adicionar item</Button>
+                                        <Button className="font-12" variant="contained" onClick={handleInsert} >Adicionar item</Button>
                                     </main>
                                 
                                 ) : (
@@ -224,10 +286,10 @@ function Produtos() {
                                                 <Table>
                                                     <TableHead>
                                                         <TableRow>
-                                                            <TableCell align="left">Nome</TableCell>
-                                                            <TableCell align="center">Preço</TableCell>
-                                                            <TableCell align="center">Preço Revendedor</TableCell>
-                                                            <TableCell align="center" width="30%">Ações</TableCell>                            
+                                                            <TableCell align="left" width="40%">Nome</TableCell>
+                                                            <TableCell align="center" width="20%">Preço</TableCell>
+                                                            <TableCell align="center" width="20%">Preço Revendedor</TableCell>
+                                                            <TableCell align="center" width="20%">Ações</TableCell>                            
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
@@ -238,13 +300,10 @@ function Produtos() {
                                                                     <TableCell align="center">R$ { moneyFormatter(item.valorpadrao) }</TableCell>
                                                                     <TableCell align="center">R$ { moneyFormatter(item.valorrevendedor) }</TableCell>
                                                                     <TableCell align="center">
-                                                                        <IconButton onClick={() => {}}>
-                                                                            <MdRemoveRedEye size={ 20 } className="black-color-30" />
-                                                                        </IconButton>
-                                                                        <IconButton onClick={() => {}}>
+                                                                        <IconButton onClick={() => handleEdit(item)}>
                                                                             <MdEdit size={ 20 } className="black-color-30" />
                                                                         </IconButton>
-                                                                        <IconButton onClick={() => {}}>
+                                                                        <IconButton onClick={() => handleDelete(item)}>
                                                                             <MdDelete size={ 20 } className="black-color-30" />
                                                                         </IconButton>
                                                                     </TableCell>                            
@@ -257,9 +316,44 @@ function Produtos() {
                                             </TableContainer>
                                         </main>
 
+                                        
+                                        <Dialog
+                                            open={deleteMessage}
+                                            onClose={handleClose}
+                                            aria-labelledby="alert-dialog-title"
+                                            aria-describedby="alert-dialog-description"
+                                        >
+                                            <DialogTitle id="alert-dialog-title">
+                                                Excluir produto
+                                            </DialogTitle>
+                                            <DialogContent>
+                                                <DialogContentText id="alert-dialog-description">
+                                                    Tem certeza que deseja excluir o produto?
+                                                </DialogContentText>
+                                            </DialogContent>
+                                            <DialogActions>
+                                                { loadingCancel ? (
+                                                    <div className="p-2">
+                                                        <CircularProgress size={ 16 } thickness={ 4 } color="primary" />
+                                                    </div>
+                                                ) : (
+                                                    <> 
+                                                        <Button onClick={handleClose} color="primary">
+                                                            Não
+                                                        </Button>
+                                                        <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+                                                            Sim
+                                                        </Button>
+                                                    </>
+                                                ) }
+                                                
+                                            </DialogActions>
+                                        </Dialog>
+
                                         <ActionsComp                                             
                                             callbackAdd={() => setEdit(true)}
                                         />
+
                                     </>
                                 ) }
                             </>
