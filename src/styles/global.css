@@ -153,6 +153,7 @@ h4 { font-family: 'Montserrat', sans-serif; }
 .actions-container button.adicionar { background-color: #28a745 !important; }
 .actions-container button.filtrar { background-color: #007bff !important; }
 
+.border { border: 1px solid var(--border-color); }
 .border-bottom { border-bottom: 1px solid var(--border-color); }
 
 .skeleton-root { position: relative;height: 1.2em;background-color: var(--skeleton-root);overflow: hidden; }

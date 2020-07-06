@@ -21,6 +21,7 @@ import NumberFormat from 'react-number-format';
 import HeaderComp from '../../components/headerComp';
 import ActionsComp from '../../components/actionsComp';
 import ModalComp from '../../components/modalComp';
+import ModalFullComp from '../../components/modalFullComp';
 import { existsOrError, notify, apiRequest, moneyFormatter } from '../../utils';
 
 function NumberFormatCustom(props) {
@@ -64,6 +65,7 @@ function Pedidos() {
     const [ loadingCancel, setLoadingCancel ] = useState(false);
 
     const [ view, setView ] = useState(false)
+    const [ modalProduto, setModalProduto ] = useState(false);
 
     const [ deleteMessage, setDeleteMessage ] = useState(false);
 
@@ -142,6 +144,10 @@ function Pedidos() {
     function handleCloseView() {
         //handleCancel();
         setView(false);
+    }
+
+    function handleCloseModalProduto() {
+        setModalProduto(false);
     }
 
     function handleClose() {
@@ -229,7 +235,7 @@ function Pedidos() {
             ) : (
                 <>
                     { existsOrError(edit) ? (
-                        
+                        <>
                         <main className="conteudo container py-5">
 
                             <header class="d-flex justify-content-between align-items-center border-bottom mb-5 pb-3">
@@ -273,6 +279,13 @@ function Pedidos() {
                                 }}
                             />
 
+                            <Button variant="contained" color="primary" onClick={() => setModalProduto(true)}>Adicionar Produto</Button>
+
+                            <div className="border">
+
+                            </div>
+
+                            {/*}
                             <TextField                                
                                 select
                                 label="Produto"
@@ -292,6 +305,7 @@ function Pedidos() {
                                     </option>
                                 ))}
                             </TextField>
+                                {*/}
 
                             <div className="d-flex pt-3 justify-content-center align-items-center">
                                 <Button variant="outlined" size="large" className="mx-2" onClick={() => !existsOrError(loading) && handleCancel()}>Cancelar</Button>
@@ -309,6 +323,16 @@ function Pedidos() {
 
                         </main>
 
+                        <ModalFullComp
+                                    modalOpen={modalProduto}
+                                    callbackCloseModal={handleCloseModalProduto}
+                                    title={ `Produtos para ${ formulario.nome }` }
+                                >
+                                    <Button onClick={handleCloseModalProduto}>Fechar</Button>
+
+                                </ModalFullComp>
+
+                        </>
                     ) : (
                         <>
                             { !existsOrError(pedidos) ? (
