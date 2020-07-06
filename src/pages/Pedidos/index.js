@@ -265,6 +265,20 @@ function Pedidos() {
                                 className="mb-3"
                             />
 
+                            <div className="pb-3">
+                                <Button variant="contained" color="primary" onClick={() => setModalProduto(true)}>Adicionar Produto</Button>
+                            </div>
+
+                            <div className="border rounded p-2 mb-3">
+                                { formulario.produtos.length > 0 ? (
+                                    <div></div>
+                                ) : (
+                                    <div className="py-4 text-center default-color-4 text-italic font-12">
+                                        Nenhum produto
+                                    </div>
+                                ) }
+                            </div>
+
                             <TextField 
                                 label="Valor" 
                                 variant="outlined" 
@@ -279,13 +293,28 @@ function Pedidos() {
                                 }}
                             />
 
-                            <Button variant="contained" color="primary" onClick={() => setModalProduto(true)}>Adicionar Produto</Button>
-
-                            <div className="border">
-
+                            <div className="d-flex pt-3 justify-content-center align-items-center">
+                                <Button variant="outlined" size="large" className="mx-2" onClick={() => !existsOrError(loading) && handleCancel()}>Cancelar</Button>
+                                <Button onClick={() => {}} variant="contained" className="btn-primary mx-2" size="large">
+                                    { existsOrError(loading) ? (
+                                        <CircularProgress size={ 22 } thickness={ 4 } color="white" />
+                                    ) : (
+                                        <>
+                                            { existsOrError(formulario.id) ? 'Editar' : 'Cadastrar' }
+                                        </>
+                                    ) }
+                                    
+                                </Button>
                             </div>
 
-                            {/*}
+                        </main>
+
+                        <ModalFullComp
+                            modalOpen={modalProduto}
+                            callbackCloseModal={handleCloseModalProduto}
+                            title="Adicionar Produto"
+                        >
+                            
                             <TextField                                
                                 select
                                 label="Produto"
@@ -305,35 +334,20 @@ function Pedidos() {
                                     </option>
                                 ))}
                             </TextField>
-                                {*/}
 
                             <div className="d-flex pt-3 justify-content-center align-items-center">
-                                <Button variant="outlined" size="large" className="mx-2" onClick={() => !existsOrError(loading) && handleCancel()}>Cancelar</Button>
+                                
                                 <Button onClick={() => {}} variant="contained" className="btn-primary mx-2" size="large">
-                                    { existsOrError(loading) ? (
-                                        <CircularProgress size={ 22 } thickness={ 4 } color="white" />
-                                    ) : (
-                                        <>
-                                            { existsOrError(formulario.id) ? 'Editar' : 'Cadastrar' }
-                                        </>
-                                    ) }
-                                    
+                                    Inserir
                                 </Button>
                             </div>
 
-                        </main>
-
-                        <ModalFullComp
-                                    modalOpen={modalProduto}
-                                    callbackCloseModal={handleCloseModalProduto}
-                                    title={ `Produtos para ${ formulario.nome }` }
-                                >
-                                    <Button onClick={handleCloseModalProduto}>Fechar</Button>
-
-                                </ModalFullComp>
+                        </ModalFullComp>
 
                         </>
+
                     ) : (
+                        
                         <>
                             { !existsOrError(pedidos) ? (
                                 <main className="conteudo d-flex flex-column justify-content-center align-items-center container py-3">

@@ -6,8 +6,6 @@ import {
     Slide
 } from '@material-ui/core/';
 
-// import { Container } from './styles';
-
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -25,11 +23,17 @@ function ModalFull(props) {
             open={props.modalOpen}
             onClose={handleCloseModal}            
             TransitionComponent={Transition}
+            className="modal"
         >
             
-            <div className="topo-modal-fullscreen bg-color">aaaa</div>
+            <header className="modal-header d-flex justify-content-between align-items-center px-4">
+                <h2 className="white-color font-14">{ props.title }</h2>
+                <IconButton onClick={handleCloseModal}>
+                    <FiX size={ 26 } className="white-color" />
+                </IconButton>
+            </header>
 
-            <div className="p-4">
+            <div className="flex-grow-1 modal-body p-4">
                 { props.children }
             </div>
             
