@@ -164,7 +164,7 @@ h4 { font-family: 'Montserrat', sans-serif; }
 	to { transform: translateX(250%); }
 }
 
-.modal .modal-header { height: var(--header-height);background-color: var(--header-background-color);box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);z-index: 10; }
+.modal .modal-header { text-transform: uppercase;height: var(--header-height);background-color: var(--header-background-color);box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);z-index: 10; }
 .modal .modal-body { overflow-x: hidden;overflow-y: auto;background-color: var(--base-background-color); }
 
 

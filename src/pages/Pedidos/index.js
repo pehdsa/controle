@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { MdRemoveRedEye, MdEdit, MdDelete } from "react-icons/md";
-import { FiX } from "react-icons/fi";
+import { MdEdit, MdDelete } from "react-icons/md";
 import { 
     IconButton, 
     Button,
@@ -92,11 +91,26 @@ function Pedidos() {
         valor: "",
         estampa: "",
         quantidade: ""
-    })
+    });
+    const [ validateProduto, setValidateProduto ] = useState({
+        produtoid: true,
+        produtonome: true,
+        valor: true,
+        estampa: true,
+        quantidade: true
+    });
 
     useEffect(() => {
         getData();
     },[]);
+
+    const refFotos = useRef(true);
+    useEffect(() => {        
+        if (refFotos.current) { refFotos.current = false; return; }
+        console.log(produtos.filter(produto => produto.id === "2")[0].nome);
+
+
+    },[produtos]); 
 
     async function getData() {       
 
@@ -320,8 +334,17 @@ function Pedidos() {
                                 label="Produto"
                                 variant="outlined" 
                                 fullWidth
-                                value={ formularioProduto.produtonome }
-                                onChange={event => setFormularioProduto({ ...formularioProduto, produtonome: event.target.value })}
+                                required
+                                error={ !validateProduto.produtoid }                                
+                                onChange={event => { 
+                                    setFormularioProduto({ 
+                                        ...formularioProduto, 
+                                        produtoid: event.target.value, 
+                                        produtonome: produtos.filter(produto => produto.id === event.target.value)[0].nome, 
+                                        valor: formulario.revendedor ? produtos.filter(produto => produto.id === event.target.value)[0].valorrevendedor : produtos.filter(produto => produto.id === event.target.value)[0].valorpadrao
+                                    }); 
+                                }}
+                                value={ formularioProduto.produtoid }
                                 className="mb-3"
                                 SelectProps={{
                                     native: true,
@@ -329,14 +352,51 @@ function Pedidos() {
                             >
                                 <option value=""></option>
                                 {produtos.map((option) => (
-                                    <option key={option.id} value={option.nome}>
+                                    <option key={option.id} value={option.id}>
                                         {option.nome}
                                     </option>
                                 ))}
+
                             </TextField>
 
-                            <div className="d-flex pt-3 justify-content-center align-items-center">
-                                
+                            <TextField 
+                                label="Estampa" 
+                                variant="outlined" 
+                                fullWidth
+                                required
+                                error={ !validateProduto.estampa }
+                                onChange={event => setFormularioProduto({ ...formularioProduto, estampa: event.target.value })}
+                                value={ formularioProduto.estampa }
+                                className="mb-3"
+                            />
+
+                            <TextField 
+                                label="Valor" 
+                                variant="outlined" 
+                                fullWidth
+                                required
+                                error={ !validateProduto.valor }
+                                onChange={event => setFormularioProduto({ ...formularioProduto, valor: event.target.value })}
+                                value={ formularioProduto.valor }
+                                className="mb-3"
+                                InputProps={{
+                                    inputComponent: NumberFormatCustom,
+                                }}
+                            />
+
+                            <TextField 
+                                label="Quantidade" 
+                                variant="outlined" 
+                                fullWidth
+                                required
+                                error={ !validateProduto.quantidade }
+                                onChange={event => setFormularioProduto({ ...formularioProduto, quantidade: event.target.value })}
+                                value={ formularioProduto.quantidade }
+                                className="mb-3"
+                                type="number"
+                            />
+
+                            <div className="d-flex pt-3 justify-content-center align-items-center">                                
                                 <Button onClick={() => {}} variant="contained" className="btn-primary mx-2" size="large">
                                     Inserir
                                 </Button>
