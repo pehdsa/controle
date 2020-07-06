@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { MdRemoveRedEye, MdEdit, MdDelete } from "react-icons/md";
 import { FiX } from "react-icons/fi";
 import { 
@@ -10,13 +11,46 @@ import {
     TableHead, 
     TableRow, 
     TableCell,
-    CircularProgress
+    CircularProgress,
+    TextField,
+    Switch,
+    FormControlLabel
 } from '@material-ui/core/';
+import NumberFormat from 'react-number-format';
 
 import HeaderComp from '../../components/headerComp';
 import ActionsComp from '../../components/actionsComp';
 import ModalComp from '../../components/modalComp';
 import { existsOrError, notify, apiRequest, moneyFormatter } from '../../utils';
+
+function NumberFormatCustom(props) {
+    const { inputRef, onChange, ...other } = props;
+
+    return (
+        <NumberFormat
+        {...other}
+        getInputRef={inputRef}
+        onValueChange={(values) => {
+            onChange({
+            target: {
+                name: props.name,
+                value: values.value,
+            },
+            });
+        }}
+        thousandSeparator="." 
+        decimalSeparator=","
+        isNumericString
+        //prefix="R$ "
+        />
+    );
+}
+
+NumberFormatCustom.propTypes = {
+    inputRef: PropTypes.func.isRequired,
+    name: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+};
 
 function Pedidos() {
 
@@ -35,29 +69,32 @@ function Pedidos() {
 
     const [ formulario, setFormulario ] = useState({
         id: "",
+        nome: "",
         revendedor: "0",
         valor: "",  
         desconto: "",
         produtos: []
     });
     const [ validate, setValidate ] = useState({
+        nome: true,
         revendedor: true,
         valor: true,  
         desconto: true,
         produtos: true
     });
 
+    const [ formularioProduto, setFormularioProduto ] = useState({
+        produtoid: "",
+        produtonome: "",
+        tamanho: "",
+        valor: "",
+        estampa: "",
+        quantidade: ""
+    })
+
     useEffect(() => {
         getData();
     },[]);
-
-    useEffect(() => {
-        console.log(produtos)
-    },[produtos]);
-    
-    useEffect(() => {
-        console.log(formulario)
-    },[formulario]);
 
     async function getData() {       
 
@@ -97,8 +134,8 @@ function Pedidos() {
     }
 
     function handleCancel() {
-        setFormulario({ id: "",revendedor: "0",valor: "",desconto: "",produtos: [] });
-        setValidate({ revendedor: true,valor: true,desconto: true,produtos: true });
+        setFormulario({ id: "",nome: "", revendedor: "0",valor: "",desconto: "",produtos: [] });
+        setValidate({ nome: true, revendedor: true,valor: true,desconto: true,produtos: true });
         edit && setEdit(false);
     }
 
@@ -199,6 +236,63 @@ function Pedidos() {
                                 <h2 className="font-18 default-color-8" >Adicionar pedido</h2>
                             </header>
 
+                            <FormControlLabel
+                                control={
+                                    <Switch 
+                                        checked={ formulario.revendedor === "1" ? true : false} 
+                                        onChange={() => setFormulario({ ...formulario, revendedor: formulario.revendedor === "1" ? "0" : "1" })} 
+                                        name="revendedor" 
+                                    />
+                                }
+                                label="para revendedor"
+                                className="mb-3"
+                            />
+
+                            <TextField 
+                                label="Nome do Pedido" 
+                                variant="outlined" 
+                                fullWidth
+                                required
+                                error={ !validate.nome }
+                                onChange={event => setFormulario({ ...formulario, nome: event.target.value })}
+                                value={ formulario.nome }
+                                className="mb-3"
+                            />
+
+                            <TextField 
+                                label="Valor" 
+                                variant="outlined" 
+                                fullWidth
+                                required
+                                error={ !validate.valor }
+                                onChange={event => setFormulario({ ...formulario, valor: event.target.value })}
+                                value={ formulario.valor }
+                                className="mb-3"
+                                InputProps={{
+                                    inputComponent: NumberFormatCustom,
+                                }}
+                            />
+
+                            <TextField                                
+                                select
+                                label="Produto"
+                                variant="outlined" 
+                                fullWidth
+                                value={ formularioProduto.produtonome }
+                                onChange={event => setFormularioProduto({ ...formularioProduto, produtonome: event.target.value })}
+                                className="mb-3"
+                                SelectProps={{
+                                    native: true,
+                                }}
+                            >
+                                <option value=""></option>
+                                {produtos.map((option) => (
+                                    <option key={option.id} value={option.nome}>
+                                        {option.nome}
+                                    </option>
+                                ))}
+                            </TextField>
+
                             <div className="d-flex pt-3 justify-content-center align-items-center">
                                 <Button variant="outlined" size="large" className="mx-2" onClick={() => !existsOrError(loading) && handleCancel()}>Cancelar</Button>
                                 <Button onClick={() => {}} variant="contained" className="btn-primary mx-2" size="large">
@@ -206,7 +300,7 @@ function Pedidos() {
                                         <CircularProgress size={ 22 } thickness={ 4 } color="white" />
                                     ) : (
                                         <>
-                                                { existsOrError(formulario.id) ? 'Editar' : 'Cadastrar' }
+                                            { existsOrError(formulario.id) ? 'Editar' : 'Cadastrar' }
                                         </>
                                     ) }
                                     
