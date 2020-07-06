@@ -51,7 +51,9 @@ h2,
 h3,
 h4 { font-family: 'Montserrat', sans-serif; }
 
-#root { position: relative;min-height: 100vh;background-color: var(--base-background-color);padding-top: var(--header-height); } 
+.MuiPaper-root { color: var(--default-color) !important; }
+
+#root { position: relative;min-height: 100vh;background-color: var(--base-background-color);padding-top: var(--header-height);overflow-x: hidden; } 
 .topo { position: fixed;top: 0;left: 0;width: 100%;height: var(--header-height);background-color: var(--header-background-color);box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);z-index: 10; }
 .topo h1 { font-family: 'Montserrat', sans-serif;font-weight: 500; }
 .topo-left { width: 64px; }
@@ -160,6 +162,11 @@ h4 { font-family: 'Montserrat', sans-serif; }
 	from { transform: translateX(-100%); }
 	to { transform: translateX(250%); }
 }
+
+
+.modal-produtos .produtos > div { border-bottom: 1px solid var(--border-color);background-color:#f5f5f5;margin-bottom: 3px; }
+.modal-produtos .produtos > div:last-of-type { border: 0 !important;margin-bottom: 0 !important; }
+.modal-produtos .produtos .qtde { min-width: 120px; }
 
 @media (min-width: 768px) { /* COL MD */
 

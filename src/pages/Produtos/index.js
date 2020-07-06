@@ -18,14 +18,13 @@ import {
     DialogContentText,
     DialogActions,
     FormControlLabel,
-    Switch
+    Switch,
 } from '@material-ui/core/';
 import NumberFormat from 'react-number-format';
 
 
 import HeaderComp from '../../components/headerComp';
 import ActionsComp from '../../components/actionsComp';
-import Skeleton from '../../components/skeletonComp';
 import { existsOrError, notify, apiRequest, moneyFormatter } from '../../utils';
 
 function NumberFormatCustom(props) {
@@ -59,8 +58,7 @@ NumberFormatCustom.propTypes = {
 
 function Produtos() {
 
-    const [ produtos, setProdutos ] = useState([]);
-    
+    const [ produtos, setProdutos ] = useState([]);    
 
     const [ pageSkeleton, setPageSkeleton ] = useState(true);
     const [ edit, setEdit ] = useState(false);
@@ -189,7 +187,12 @@ function Produtos() {
             {
                 existsOrError(pageSkeleton) ? (
                     <main className="conteudo d-flex flex-column justify-content-center align-items-center container py-3">
-                        <Skeleton width={ 120 } height={ 10 } />
+                    
+                        <div className="d-flex flex-column justify-content-center align-items-center">
+                            <div className="font-14 default-color-4 pb-3">Carregando</div>
+                            <CircularProgress size={ 28 } />
+                        </div>
+
                     </main>
                 ) : (
                     <>
@@ -299,7 +302,8 @@ function Produtos() {
                                                                     <TableCell align="left" className="font-16"><b>{ item.nome }</b></TableCell>
                                                                     <TableCell align="center">R$ { moneyFormatter(item.valorpadrao) }</TableCell>
                                                                     <TableCell align="center">R$ { moneyFormatter(item.valorrevendedor) }</TableCell>
-                                                                    <TableCell align="center">
+                                                                    <TableCell align="center">                                                                        
+
                                                                         <IconButton onClick={() => handleEdit(item)}>
                                                                             <MdEdit size={ 20 } className="black-color-30" />
                                                                         </IconButton>

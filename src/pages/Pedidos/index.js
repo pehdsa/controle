@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MdRemoveRedEye, MdEdit, MdDelete } from "react-icons/md";
+import { FiX } from "react-icons/fi";
 import { 
     IconButton, 
     Button,
@@ -8,23 +9,27 @@ import {
     TableBody, 
     TableHead, 
     TableRow, 
-    TableCell
+    TableCell,
+    CircularProgress
 } from '@material-ui/core/';
 
 import HeaderComp from '../../components/headerComp';
 import ActionsComp from '../../components/actionsComp';
-import Skeleton from '../../components/skeletonComp';
+import ModalComp from '../../components/modalComp';
 import { existsOrError, notify, apiRequest, moneyFormatter } from '../../utils';
 
 function Pedidos() {
 
     const [ pedidos, setPedidos ] = useState([]);
-    
+    const [ tamanhos, setTamanhos ] = useState([]);
+    const [ produtos, setProdutos ] = useState([]);
 
     const [ pageSkeleton, setPageSkeleton ] = useState(true);
     const [ edit, setEdit ] = useState(false);
     const [ loading, setLoading ] = useState(false);
     const [ loadingCancel, setLoadingCancel ] = useState(false);
+
+    const [ view, setView ] = useState(false)
 
     const [ deleteMessage, setDeleteMessage ] = useState(false);
 
@@ -46,7 +51,16 @@ function Pedidos() {
         getData();
     },[]);
 
-    async function getData() {
+    useEffect(() => {
+        console.log(produtos)
+    },[produtos]);
+    
+    useEffect(() => {
+        console.log(formulario)
+    },[formulario]);
+
+    async function getData() {       
+
         const result = await apiRequest('obterpedidos');
         if (result) {
             setPedidos(result);
@@ -54,10 +68,22 @@ function Pedidos() {
         } else {
             setPageSkeleton(false);
         }
+
+        const tamanhos = await apiRequest('obterpedidos');
+        existsOrError(tamanhos) && setTamanhos(tamanhos);
+
+        const produtos = await apiRequest('obterprodutos');
+        existsOrError(produtos) && setProdutos(produtos);
+
     }
 
     function handleInsert() {
         setEdit(true);
+    }
+
+    function handleView(item) {
+        setFormulario({ ...item });
+        setView(true);
     }
 
     function handleEdit(item) {
@@ -71,9 +97,14 @@ function Pedidos() {
     }
 
     function handleCancel() {
-        setFormulario({ id: "", nome: "", valorpadrao: "", valorrevendedor: "", comtamanho: "0" });
-        setValidate({ nome: true, valorpadrao: true, valorrevendedor: true, });
+        setFormulario({ id: "",revendedor: "0",valor: "",desconto: "",produtos: [] });
+        setValidate({ revendedor: true,valor: true,desconto: true,produtos: true });
         edit && setEdit(false);
+    }
+
+    function handleCloseView() {
+        //handleCancel();
+        setView(false);
     }
 
     function handleClose() {
@@ -102,7 +133,7 @@ function Pedidos() {
         }
         handleRegister();
     }
-
+    
     async function handleConfirmDelete(){
         setLoadingCancel(true);
         const result = await apiRequest('deletarproduto', { id: formulario.id});
@@ -148,61 +179,133 @@ function Pedidos() {
             <HeaderComp title="Pedidos" />
 
             { existsOrError(pageSkeleton) ? (
+                
                 <main className="conteudo d-flex flex-column justify-content-center align-items-center container py-3">
-                    <Skeleton width={ 120 } height={ 10 } />
+                    
+                    <div className="d-flex flex-column justify-content-center align-items-center">
+                        <div className="font-14 default-color-4 pb-3">Carregando</div>
+                        <CircularProgress size={ 28 } />
+                    </div>
+
                 </main>
+
             ) : (
                 <>
-                    { !existsOrError(pedidos) ? (
-                        <main className="conteudo d-flex flex-column justify-content-center align-items-center container py-3">
-                            <div className="default-color-4 mb-2">Nenhum item cadastrado</div>
-                            <Button className="font-12" variant="contained" >Adicionar item</Button>
+                    { existsOrError(edit) ? (
+                        
+                        <main className="conteudo container py-5">
+
+                            <header class="d-flex justify-content-between align-items-center border-bottom mb-5 pb-3">
+                                <h2 className="font-18 default-color-8" >Adicionar pedido</h2>
+                            </header>
+
+                            <div className="d-flex pt-3 justify-content-center align-items-center">
+                                <Button variant="outlined" size="large" className="mx-2" onClick={() => !existsOrError(loading) && handleCancel()}>Cancelar</Button>
+                                <Button onClick={() => {}} variant="contained" className="btn-primary mx-2" size="large">
+                                    { existsOrError(loading) ? (
+                                        <CircularProgress size={ 22 } thickness={ 4 } color="white" />
+                                    ) : (
+                                        <>
+                                                { existsOrError(formulario.id) ? 'Editar' : 'Cadastrar' }
+                                        </>
+                                    ) }
+                                    
+                                </Button>
+                            </div>
+
                         </main>
+
                     ) : (
                         <>
-                        <main className="conteudo container py-5">
-                            <TableContainer className="tabela">
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Nome</TableCell>
-                                            <TableCell width="30%" align="right">Ações</TableCell>                            
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        { pedidos.map((item, index) => {
-                                            return (
-                                                <TableRow key={ index }>
-                                                    <TableCell className="font-16"><b>{ item.nome }</b></TableCell>
-                                                    <TableCell align="right">
-                                                        <IconButton onClick={() => {}}>
-                                                            <MdRemoveRedEye size={ 20 } className="black-color-30" />
-                                                        </IconButton>
-                                                        <IconButton onClick={() => {}}>
-                                                            <MdEdit size={ 20 } className="black-color-30" />
-                                                        </IconButton>
-                                                        <IconButton onClick={() => {}}>
-                                                            <MdDelete size={ 20 } className="black-color-30" />
-                                                        </IconButton>
-                                                    </TableCell>                            
+                            { !existsOrError(pedidos) ? (
+                                <main className="conteudo d-flex flex-column justify-content-center align-items-center container py-3">
+                                    <div className="default-color-4 mb-3">Nenhum item cadastrado</div>
+                                    <Button className="font-12" variant="contained" onClick={handleInsert} >Adicionar item</Button>
+                                </main>
+                            ) : (
+                                <>
+                                <main className="conteudo container py-5">
+                                    <TableContainer className="tabela">
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell width="45%">Nome</TableCell>
+                                                    <TableCell width="20%" align="center">Data</TableCell>
+                                                    <TableCell width="20%" align="center">Produtos</TableCell>
+                                                    <TableCell width="15%" align="center">Ações</TableCell>
                                                 </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                { pedidos.map((item, index) => {
+                                                    return ( 
+                                                        <TableRow key={ index } className={ (item.entregue !== "0") ? 'desativado' : '' }>
+                                                            <TableCell className="font-16">
+                                                                <b>{ item.nome }</b>
+                                                                <Button className="ml-2 font-11">Marcar como entregue</Button>
+                                                            </TableCell>
+                                                            <TableCell align="center">{ item.data }</TableCell>
+                                                            <TableCell align="center">
+                                                                <Button color="primary" className="font-12" onClick={() => handleView(item)}>Ver Produtos</Button>
+                                                            </TableCell>
+                                                            <TableCell align="center">                                                        
+                                                                <IconButton onClick={() => handleEdit(item)}>
+                                                                    <MdEdit size={ 20 } className="black-color-30" />
+                                                                </IconButton>
+                                                                <IconButton onClick={() => handleDelete(item)}>
+                                                                    <MdDelete size={ 20 } className="black-color-30" />
+                                                                </IconButton>
+                                                            </TableCell>                            
+                                                        </TableRow>
+                                                    )
+                                                }) }
+                                                
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </main>
+        
+                                <ModalComp
+                                    modalOpen={view}
+                                    callbackCloseModal={handleCloseView}
+                                    title={ `Produtos para ${ formulario.nome }` }
+                                >
+        
+                                    <div className="produtos">
+                                            
+                                        { existsOrError(formulario.produtos) && formulario.produtos.map(item => {
+                                            return (
+                                                
+                                                <div className="d-flex p-2">
+                                                    <div className="d-flex flex-grow-1 align-items-center font-14 pl-1">
+                                                        <div>
+                                                            <b>{ item.produtonome }</b><br />
+                                                            <span className="font-12 default-color-6">{ item.estampa }</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="qtde px-3 d-flex align-items-center justify-content-center font-12 default-color-6 border-left">
+                                                        { `${item.quantidade} ${ (item.quantidade > 1) ? 'unidades' : 'unidade' }` }
+                                                    </div>                                        
+                                                </div>    
+        
                                             )
                                         }) }
-                                        
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </main>
         
-                        <ActionsComp 
-                            search={ true }
-                            callbackSearch={() => alert('search')}
-                            filter={ true }
-                            callbackFilter={() => alert('filter')}
-                            callbackAdd={() => alert('add')}
-                        />
+                                    </div>
+        
+                                </ModalComp>
+                
+                                <ActionsComp 
+                                    //search={ true }
+                                    //callbackSearch={() => alert('search')}
+                                    //filter={ true }
+                                    //callbackFilter={() => alert('filter')}
+                                    callbackAdd={() => handleInsert()}
+                                />
+                                </>
+                            ) }
                         </>
                     ) }
+                    
                 </>
             ) }
 
