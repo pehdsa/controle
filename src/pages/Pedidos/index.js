@@ -76,14 +76,12 @@ function Pedidos() {
         nome: "",
         revendedor: "0",
         valor: "",  
-        desconto: "",
         produtos: []
     });
     const [ validate, setValidate ] = useState({
         nome: true,
         revendedor: true,
         valor: true,  
-        desconto: true,
         produtos: true
     });
 
@@ -120,11 +118,7 @@ function Pedidos() {
         console.log(produtos);
     },[produtos]);
 
-    const refFotos = useRef(true);
-    useEffect(() => {        
-        if (refFotos.current) { refFotos.current = false; return; }
-        console.log(formulario);
-    },[formulario]); 
+    
 
     const refForm = useRef(true);
     useEffect(() => {        
@@ -132,6 +126,12 @@ function Pedidos() {
         console.log(formularioProduto);
     },[formularioProduto]); 
     */
+
+   const refFormulario = useRef(true);
+   useEffect(() => {        
+       if (refFormulario.current) { refFormulario.current = false; return; }
+       console.log(formulario);
+   },[formulario]); 
 
     async function getData() {       
 
@@ -249,18 +249,18 @@ function Pedidos() {
             setDeleteMessage(false);
         }
     }
-    /*
+    
     function handleSubmit() {
         setLoading(true);
         if (
             !existsOrError(formulario.nome) || 
-            !existsOrError(formulario.valorpadrao) || 
-            !existsOrError(formulario.valorrevendedor)
+            !existsOrError(formulario.valor) || 
+            !existsOrError(formulario.produtos)
         ) {
             const camposinvalidos = {
                 nome: existsOrError(formulario.nome) ? true : false,
-                valorpadrao: existsOrError(formulario.valorpadrao) ? true : false,
-                valorrevendedor: existsOrError(formulario.valorrevendedor) ? true : false
+                valor: existsOrError(formulario.valor) ? true : false,
+                produtos: existsOrError(formulario.produtos) ? true : false
             }
             setValidate({...validate, ...camposinvalidos});
             setLoading(false);            
@@ -269,7 +269,30 @@ function Pedidos() {
         }
         handleRegister();
     }
-    
+
+    async function handleRegister() {
+        const result = existsOrError(formulario.id) ? await apiRequest('alterarproduto', formulario) : await apiRequest('inserirpedido', formulario);
+        if (result) {            
+            if(!existsOrError(formulario.id)) {
+                setPedidos([ result, ...pedidos ])
+            } else {
+                const pedidosEditados = [];
+                pedidos.forEach(item => {
+                    if(item.id === formulario.id) {
+                        pedidosEditados.push({ ...result })
+                    } else {
+                        pedidosEditados.push({ ...item });
+                    }
+                });
+                setPedidos(pedidosEditados);
+            }
+            handleCancel();
+            setLoading(false);
+        } else {
+            setLoading(false);
+        }
+    }
+    /*
     async function handleConfirmDelete(){
         setLoadingCancel(true);
         const result = await apiRequest('deletarproduto', { id: formulario.id});
@@ -285,28 +308,7 @@ function Pedidos() {
         }
     }
 
-    async function handleRegister() {
-        const result = existsOrError(formulario.id) ? await apiRequest('alterarproduto', formulario) : await apiRequest('inserirproduto', formulario);
-        if (result) {            
-            if(!existsOrError(formulario.id)) {
-                setProdutos([ result, ...produtos ])
-            } else {
-                const produtosEditados = [];
-                produtos.forEach(item => {
-                    if(item.id === formulario.id) {
-                        produtosEditados.push({ ...result })
-                    } else {
-                        produtosEditados.push({ ...item });
-                    }
-                });
-                setProdutos(produtosEditados);
-            }
-            handleCancel();
-            setLoading(false);
-        } else {
-            setLoading(false);
-        }
-    }
+    
     */
 
     return (
@@ -421,7 +423,7 @@ function Pedidos() {
 
                             <div className="d-flex pt-3 justify-content-center align-items-center">
                                 <Button variant="outlined" size="large" className="mx-2" onClick={() => !existsOrError(loading) && handleCancel()}>Cancelar</Button>
-                                <Button onClick={() => {}} variant="contained" className="btn-primary mx-2" size="large">
+                                <Button onClick={() => handleSubmit()} variant="contained" className="btn-primary mx-2" size="large">
                                     { existsOrError(loading) ? (
                                         <CircularProgress size={ 22 } thickness={ 4 } color="white" />
                                     ) : (
