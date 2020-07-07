@@ -106,7 +106,8 @@ function Pedidos() {
     useEffect(() => {
         getData();
     },[]);
-
+    
+    /*
     const refTam = useRef(true);
     useEffect(() => {        
         if (refTam.current) { refTam.current = false; return; }
@@ -130,6 +131,7 @@ function Pedidos() {
         if (refForm.current) { refForm.current = false; return; }
         console.log(formularioProduto);
     },[formularioProduto]); 
+    */
 
     async function getData() {       
 
@@ -194,7 +196,6 @@ function Pedidos() {
     }
 
     function handleChangeProdutos(id) {
-        console.log(id);
         const nome = existsOrError(id) ? produtos.filter(produto => produto.id === id)[0].nome : "";
         const valor = existsOrError(id) ? formulario.revendedor === "1" ? produtos.filter(produto => produto.id === id)[0].valorrevendedor : produtos.filter(produto => produto.id === id)[0].valorpadrao : "";
         existsOrError(id) ? produtos.filter(produto => produto.id === id)[0].comtamanho === "1" ? setCmTamanho(true) : setCmTamanho(false) : setCmTamanho(false) ;
@@ -206,6 +207,30 @@ function Pedidos() {
             valor
         });
 
+    }
+
+    function handleInsertProduto() {
+
+        if (
+            !existsOrError(formularioProduto.produtoid) || 
+            !existsOrError(formularioProduto.estampa) || 
+            !existsOrError(formularioProduto.valor) || 
+            !existsOrError(formularioProduto.quantidade)
+        ) {
+            const camposinvalidos = {
+                produtoid: existsOrError(formularioProduto.produtoid) ? true : false,
+                estampa: existsOrError(formularioProduto.estampa) ? true : false,
+                valor: existsOrError(formularioProduto.valor) ? true : false,
+                quantidade: existsOrError(formularioProduto.quantidade) ? true : false,
+            }
+            setValidateProduto({...validateProduto, ...camposinvalidos});        
+            notify('erro', 'Digite todos os campos');
+            return false;        
+        }
+
+        const arrProdutos = [ ...formulario.produtos, formularioProduto ]
+        setFormulario({ ...formulario, produtos: arrProdutos });
+        handleCloseModalProduto();
     }
 
     function handleCloseView() {
@@ -306,7 +331,7 @@ function Pedidos() {
                         <>
                         <main className="conteudo container py-5">
 
-                            <header class="d-flex justify-content-between align-items-center border-bottom mb-5 pb-3">
+                            <header className="d-flex justify-content-between align-items-center border-bottom mb-5 pb-3">
                                 <h2 className="font-18 default-color-8" >Adicionar pedido</h2>
                             </header>
 
@@ -337,9 +362,42 @@ function Pedidos() {
                                 <Button variant="contained" color="primary" onClick={() => setModalProduto(true)}>Adicionar Produto</Button>
                             </div>
 
-                            <div className="border rounded p-2 mb-3">
+                            <div className="lista-produtos border rounded p-2 mb-3">
                                 { formulario.produtos.length > 0 ? (
-                                    <div></div>
+                                    <>
+                                        { formulario.produtos.map(item => {
+                                            return (
+                                                <div className="item d-flex align-items-center py-3 pl-3">
+
+                                                    <div className="flex-grow-1">
+                                                        <div>
+                                                            <div className="font-16"><b>{ item.produtonome }</b></div>
+                                                            <span className="font-14 default-color-6">{ item.estampa }</span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="px-3 text-center">
+                                                        <div className="default-color font-14 mb-1"><b>Valor</b></div>
+                                                        <div className="default-color-6 font-12">R$ { moneyFormatter(item.valor) }</div>
+                                                    </div>
+                                                    
+                                                    <div className="px-3 text-center">
+                                                        <div className="default-color font-14 mb-1"><b>Qtde</b></div>
+                                                        <div className="default-color-6 font-12">{ item.quantidade }</div>
+                                                    </div>
+
+                                                    <div className="action d-flex align-items-center justify-content-center px-3">
+                                                        <IconButton className="mx-1" onClick={() =>{}}>
+                                                            <MdEdit size={ 20 } className="black-color-30" />
+                                                        </IconButton>
+                                                        <IconButton className="mx-1" onClick={() => {}}>
+                                                            <MdDelete size={ 20 } className="black-color-30" />
+                                                        </IconButton>
+                                                    </div>
+                                                </div>
+                                            )
+                                        }) }
+                                    </>
                                 ) : (
                                     <div className="py-4 text-center default-color-4 text-italic font-12">
                                         Nenhum produto
@@ -475,7 +533,7 @@ function Pedidos() {
                             />
 
                             <div className="d-flex pt-3 justify-content-center align-items-center">                                
-                                <Button onClick={() => {}} variant="contained" className="btn-primary mx-2" size="large">Inserir</Button>
+                                <Button onClick={() => handleInsertProduto() } variant="contained" className="btn-primary mx-2" size="large">Inserir</Button>
                             </div>
 
                         </ModalFullComp>
