@@ -58,6 +58,9 @@ function Pedidos() {
     const [ tamanhos, setTamanhos ] = useState([]);
     const [ produtos, setProdutos ] = useState([]);
 
+    const [ cmTamanho, setCmTamanho ] = useState(false);
+
+
     const [ pageSkeleton, setPageSkeleton ] = useState(true);
     const [ edit, setEdit ] = useState(false);
     const [ loading, setLoading ] = useState(false);
@@ -104,13 +107,29 @@ function Pedidos() {
         getData();
     },[]);
 
+    const refTam = useRef(true);
+    useEffect(() => {        
+        if (refTam.current) { refTam.current = false; return; }
+        console.log(tamanhos);
+    },[tamanhos]);
+
+    const refProdutos = useRef(true);
+    useEffect(() => {        
+        if (refProdutos.current) { refProdutos.current = false; return; }
+        console.log(produtos);
+    },[produtos]);
+
     const refFotos = useRef(true);
     useEffect(() => {        
         if (refFotos.current) { refFotos.current = false; return; }
-        console.log(produtos.filter(produto => produto.id === "2")[0].nome);
+        console.log(formulario);
+    },[formulario]); 
 
-
-    },[produtos]); 
+    const refForm = useRef(true);
+    useEffect(() => {        
+        if (refForm.current) { refForm.current = false; return; }
+        console.log(formularioProduto);
+    },[formularioProduto]); 
 
     async function getData() {       
 
@@ -122,7 +141,7 @@ function Pedidos() {
             setPageSkeleton(false);
         }
 
-        const tamanhos = await apiRequest('obterpedidos');
+        const tamanhos = await apiRequest('obtartamanhos');
         existsOrError(tamanhos) && setTamanhos(tamanhos);
 
         const produtos = await apiRequest('obterprodutos');
@@ -155,12 +174,47 @@ function Pedidos() {
         edit && setEdit(false);
     }
 
+    function handleCancelProduto() {
+        setCmTamanho(false);
+        setFormularioProduto({
+            produtoid: "",
+            produtonome: "",
+            tamanho: "",
+            valor: "",
+            estampa: "",
+            quantidade: ""
+        });
+        setValidateProduto({
+            produtoid: true,
+            produtonome: true,
+            valor: true,
+            quantidade: true,
+            estampa: true
+        });
+    }
+
+    function handleChangeProdutos(id) {
+        console.log(id);
+        const nome = existsOrError(id) ? produtos.filter(produto => produto.id === id)[0].nome : "";
+        const valor = existsOrError(id) ? formulario.revendedor === "1" ? produtos.filter(produto => produto.id === id)[0].valorrevendedor : produtos.filter(produto => produto.id === id)[0].valorpadrao : "";
+        existsOrError(id) ? produtos.filter(produto => produto.id === id)[0].comtamanho === "1" ? setCmTamanho(true) : setCmTamanho(false) : setCmTamanho(false) ;
+        
+        setFormularioProduto({
+            ...formularioProduto, 
+            produtoid: existsOrError(id) ? id : "", 
+            produtonome: nome,
+            valor
+        });
+
+    }
+
     function handleCloseView() {
-        //handleCancel();
+        //handleCancel(); 
         setView(false);
     }
 
     function handleCloseModalProduto() {
+        handleCancelProduto();
         setModalProduto(false);
     }
 
@@ -336,14 +390,7 @@ function Pedidos() {
                                 fullWidth
                                 required
                                 error={ !validateProduto.produtoid }                                
-                                onChange={event => { 
-                                    setFormularioProduto({ 
-                                        ...formularioProduto, 
-                                        produtoid: event.target.value, 
-                                        produtonome: produtos.filter(produto => produto.id === event.target.value)[0].nome, 
-                                        valor: formulario.revendedor ? produtos.filter(produto => produto.id === event.target.value)[0].valorrevendedor : produtos.filter(produto => produto.id === event.target.value)[0].valorpadrao
-                                    }); 
-                                }}
+                                onChange={event => { handleChangeProdutos(event.target.value) }}
                                 value={ formularioProduto.produtoid }
                                 className="mb-3"
                                 SelectProps={{
@@ -351,13 +398,44 @@ function Pedidos() {
                                 }}
                             >
                                 <option value=""></option>
-                                {produtos.map((option) => (
+                                { existsOrError(produtos) && produtos.map((option) => (
                                     <option key={option.id} value={option.id}>
                                         {option.nome}
                                     </option>
                                 ))}
 
                             </TextField>
+                            
+                            { existsOrError(cmTamanho) && (
+
+                                <TextField                                
+                                    select
+                                    label="Tamanho"
+                                    variant="outlined" 
+                                    fullWidth
+                                    onChange={event => { 
+                                        setFormularioProduto({ 
+                                            ...formularioProduto, 
+                                            tamanho: event.target.value
+                                        }); 
+                                        
+                                    }}
+                                    value={ formularioProduto.tamanho }
+                                    className="mb-3"
+                                    SelectProps={{
+                                        native: true,
+                                    }}
+                                    >
+
+                                    { existsOrError(tamanhos) && tamanhos.map((option) => (
+                                        <option key={option.id} value={option.id}>
+                                            {option.nome}
+                                        </option> 
+                                    ))}
+
+                                </TextField>  
+
+                            )}
 
                             <TextField 
                                 label="Estampa" 
@@ -397,9 +475,7 @@ function Pedidos() {
                             />
 
                             <div className="d-flex pt-3 justify-content-center align-items-center">                                
-                                <Button onClick={() => {}} variant="contained" className="btn-primary mx-2" size="large">
-                                    Inserir
-                                </Button>
+                                <Button onClick={() => {}} variant="contained" className="btn-primary mx-2" size="large">Inserir</Button>
                             </div>
 
                         </ModalFullComp>
