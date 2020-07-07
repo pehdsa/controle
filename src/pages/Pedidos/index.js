@@ -241,11 +241,20 @@ function Pedidos() {
 
     function handleCloseModalProduto() {
         handleCancelProduto();
+
+        let soma;
+        if (formulario.produtos.length > 0) {
+            formulario.produtos.forEach(item => soma += item.quantidade * item.valor);
+        } 
+        console.log(soma);
+
         setModalProduto(false);
     }
 
-    function handleRemoveProduto(id) {
-        
+    function handleRemoveProduto(index) {
+        const newArr = formulario.produtos;
+        delete newArr[index];
+        setFormulario({ ...formulario, produtos: newArr.filter(item => item) });
     }
 
     function handleClose() {
@@ -372,9 +381,9 @@ function Pedidos() {
                             <div className="lista-produtos border rounded p-2 mb-3">
                                 { formulario.produtos.length > 0 ? (
                                     <>
-                                        { formulario.produtos.map(item => {
+                                        { formulario.produtos.map((item, index) => {
                                             return (
-                                                <div className="item d-flex align-items-center py-3 pl-3">
+                                                <div key={ index } className="item d-flex align-items-center py-3 pl-3">
 
                                                     <div className="flex-grow-1">
                                                         <div>
@@ -393,11 +402,8 @@ function Pedidos() {
                                                         <div className="default-color-6 font-12">{ item.quantidade }</div>
                                                     </div>
 
-                                                    <div className="action d-flex align-items-center justify-content-center px-3">
-                                                        <IconButton className="mx-1" onClick={() =>{}}>
-                                                            <MdEdit size={ 20 } className="black-color-30" />
-                                                        </IconButton>
-                                                        <IconButton className="mx-1" onClick={() => {}}>
+                                                    <div className="action d-flex align-items-center justify-content-center px-3">                                                        
+                                                        <IconButton className="mx-1" onClick={() => handleRemoveProduto(index) }>
                                                             <MdDelete size={ 20 } className="black-color-30" />
                                                         </IconButton>
                                                     </div>
@@ -548,9 +554,9 @@ function Pedidos() {
                                 <>
                                 <div className="lista-produtos border rounded p-2 my-4">                                
                                     <>
-                                        { formulario.produtos.map(item => {
+                                        { formulario.produtos.map((item, index) => {
                                             return (
-                                                <div className="item d-flex align-items-center py-3 pl-3">
+                                                <div key={ index } className="item d-flex align-items-center py-3 pl-3">
 
                                                     <div className="flex-grow-1">
                                                         <div>
@@ -570,7 +576,7 @@ function Pedidos() {
                                                     </div>
 
                                                     <div className="action d-flex align-items-center justify-content-center px-3">                                                    
-                                                        <IconButton className="mx-1" onClick={() => handleRemoveProduto(item.id) }>
+                                                        <IconButton className="mx-1" onClick={() => handleRemoveProduto(index) }>
                                                             <MdDelete size={ 20 } className="black-color-30" />
                                                         </IconButton>
                                                     </div>
