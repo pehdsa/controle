@@ -230,7 +230,8 @@ function Pedidos() {
 
         const arrProdutos = [ ...formulario.produtos, formularioProduto ]
         setFormulario({ ...formulario, produtos: arrProdutos });
-        handleCloseModalProduto();
+        handleCancelProduto();
+        //handleCloseModalProduto();
     }
 
     function handleCloseView() {
@@ -241,6 +242,10 @@ function Pedidos() {
     function handleCloseModalProduto() {
         handleCancelProduto();
         setModalProduto(false);
+    }
+
+    function handleRemoveProduto(id) {
+        
     }
 
     function handleClose() {
@@ -535,8 +540,50 @@ function Pedidos() {
                             />
 
                             <div className="d-flex pt-3 justify-content-center align-items-center">                                
-                                <Button onClick={() => handleInsertProduto() } variant="contained" className="btn-primary mx-2" size="large">Inserir</Button>
+                                <Button onClick={() => { handleCloseModalProduto();setFormulario({ ...formulario, produtos: [] }) } } variant="outlined" size="large" className="mx-2">{ formulario.produtos.length > 0 ? 'Limpar' : 'Cancelar' }</Button>
+                                <Button onClick={() => handleInsertProduto() } variant="contained" className="btn-primary mx-2" size="large">Adicionar</Button>
                             </div>
+                            
+                            { formulario.produtos.length > 0 && (
+                                <>
+                                <div className="lista-produtos border rounded p-2 my-4">                                
+                                    <>
+                                        { formulario.produtos.map(item => {
+                                            return (
+                                                <div className="item d-flex align-items-center py-3 pl-3">
+
+                                                    <div className="flex-grow-1">
+                                                        <div>
+                                                            <div className="font-16"><b>{ item.produtonome }</b></div>
+                                                            <span className="font-14 default-color-6">{ item.estampa }</span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="px-3 text-center">
+                                                        <div className="default-color font-14 mb-1"><b>Valor</b></div>
+                                                        <div className="default-color-6 font-12">R$ { moneyFormatter(item.valor) }</div>
+                                                    </div>
+                                                    
+                                                    <div className="px-3 text-center">
+                                                        <div className="default-color font-14 mb-1"><b>Qtde</b></div>
+                                                        <div className="default-color-6 font-12">{ item.quantidade }</div>
+                                                    </div>
+
+                                                    <div className="action d-flex align-items-center justify-content-center px-3">                                                    
+                                                        <IconButton className="mx-1" onClick={() => handleRemoveProduto(item.id) }>
+                                                            <MdDelete size={ 20 } className="black-color-30" />
+                                                        </IconButton>
+                                                    </div>
+                                                </div>
+                                            )
+                                        }) }                                
+                                    </>                               
+                                </div>
+                                <div className="d-flex pt-3 justify-content-center align-items-center">
+                                    <Button onClick={() => handleCloseModalProduto() } variant="contained" className="btn-primary mx-2" size="large">Finalizar</Button>
+                                </div>
+                                </>
+                            ) }
 
                         </ModalFullComp>
 
