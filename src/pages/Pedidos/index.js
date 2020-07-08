@@ -126,12 +126,12 @@ function Pedidos() {
         console.log(formularioProduto);
     },[formularioProduto]); 
     */
-
    const refFormulario = useRef(true);
    useEffect(() => {        
        if (refFormulario.current) { refFormulario.current = false; return; }
        console.log(formulario);
    },[formulario]); 
+   
 
     async function getData() {       
 
@@ -231,7 +231,6 @@ function Pedidos() {
         const arrProdutos = [ ...formulario.produtos, formularioProduto ]
         setFormulario({ ...formulario, produtos: arrProdutos });
         handleCancelProduto();
-        //handleCloseModalProduto();
     }
 
     function handleCloseView() {
@@ -241,20 +240,27 @@ function Pedidos() {
 
     function handleCloseModalProduto() {
         handleCancelProduto();
-
-        let soma;
-        if (formulario.produtos.length > 0) {
-            formulario.produtos.forEach(item => soma += item.quantidade * item.valor);
-        } 
-        console.log(soma);
-
+        handleValor();
         setModalProduto(false);
     }
 
-    function handleRemoveProduto(index) {
+    function handleValor() {
+        let soma = 0;
+        if (formulario.produtos.length > 0) {
+            formulario.produtos.forEach(item => soma += item.quantidade * item.valor);
+        } else {
+            soma = "";
+        }
+        setFormulario({ ...formulario, valor: soma });
+    }
+
+    function handleRemoveProduto(index, calcula = false) {
         const newArr = formulario.produtos;
-        delete newArr[index];
+        //delete newArr[index];
+        newArr.splice(index, 1);
+        console.log(newArr);
         setFormulario({ ...formulario, produtos: newArr.filter(item => item) });
+        calcula && handleValor();
     }
 
     function handleClose() {
@@ -285,7 +291,7 @@ function Pedidos() {
     }
 
     async function handleRegister() {
-        const result = existsOrError(formulario.id) ? await apiRequest('alterarproduto', formulario) : await apiRequest('inserirpedido', formulario);
+        const result = existsOrError(formulario.id) ? await apiRequest('alterarpedido', formulario) : await apiRequest('inserirpedido', formulario);
         if (result) {            
             if(!existsOrError(formulario.id)) {
                 setPedidos([ result, ...pedidos ])
@@ -306,13 +312,14 @@ function Pedidos() {
             setLoading(false);
         }
     }
-    /*
+    
     async function handleConfirmDelete(){
         setLoadingCancel(true);
-        const result = await apiRequest('deletarproduto', { id: formulario.id});
+        const result = await apiRequest('deletarpedido', { id: formulario.id});
+        console.log(result);
         if (result) {  
-            const newProducts = produtos.filter(item => item.id !== formulario.id);          
-            setProdutos(newProducts);
+            const newPedidos = pedidos.filter(item => item.id !== formulario.id);          
+            setPedidos(newPedidos);
             handleClose();
             handleCancel();
             setLoadingCancel(false);
@@ -321,9 +328,6 @@ function Pedidos() {
             setLoadingCancel(false);
         }
     }
-
-    
-    */
 
     return (
         <React.Fragment>
@@ -403,7 +407,7 @@ function Pedidos() {
                                                     </div>
 
                                                     <div className="action d-flex align-items-center justify-content-center px-3">                                                        
-                                                        <IconButton className="mx-1" onClick={() => handleRemoveProduto(index) }>
+                                                        <IconButton className="mx-1" onClick={() => handleRemoveProduto(index, true) }>
                                                             <MdDelete size={ 20 } className="black-color-30" />
                                                         </IconButton>
                                                     </div>
@@ -546,7 +550,7 @@ function Pedidos() {
                             />
 
                             <div className="d-flex pt-3 justify-content-center align-items-center">                                
-                                <Button onClick={() => { handleCloseModalProduto();setFormulario({ ...formulario, produtos: [] }) } } variant="outlined" size="large" className="mx-2">{ formulario.produtos.length > 0 ? 'Limpar' : 'Cancelar' }</Button>
+                                <Button onClick={() => { handleCloseModalProduto();setFormulario({ ...formulario, produtos: [], valor: "" }); } } variant="outlined" size="large" className="mx-2">{ formulario.produtos.length > 0 ? 'Limpar' : 'Cancelar' }</Button>
                                 <Button onClick={() => handleInsertProduto() } variant="contained" className="btn-primary mx-2" size="large">Adicionar</Button>
                             </div>
                             
@@ -671,6 +675,28 @@ function Pedidos() {
                                             )
                                         }) }
         
+                                    </div>
+        
+                                </ModalComp>
+
+                                <ModalComp
+                                    modalOpen={deleteMessage}
+                                    callbackCloseModal={handleClose}
+                                    title="Deletar Pedido"
+                                >
+        
+                                    <div className="text-center pt-2 pb-3">Deseja realmente deletar este pedido?</div>
+
+                                    <div className="d-flex pt-3 justify-content-center align-items-center pb-3">
+                                        { existsOrError(loadingCancel) ? (
+                                            <CircularProgress size={ 22 } thickness={ 4 } />
+                                        ) : (
+                                            <>
+                                            <Button onClick={handleClose} variant="outlined" size="large" className="mx-2">Não</Button>
+                                            <Button onClick={() => handleConfirmDelete() } variant="contained" color="secondary" className="mx-2" size="large">Sim</Button>
+                                            </>
+                                        ) }                            
+                                        
                                     </div>
         
                                 </ModalComp>
