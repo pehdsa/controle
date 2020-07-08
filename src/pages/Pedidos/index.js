@@ -289,7 +289,7 @@ function Pedidos() {
         }
         handleRegister();
     }
-
+    
     async function handleRegister() {
         const result = existsOrError(formulario.id) ? await apiRequest('alterarpedido', formulario) : await apiRequest('inserirpedido', formulario);
         if (result) {            
