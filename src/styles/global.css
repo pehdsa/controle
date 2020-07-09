@@ -3,7 +3,7 @@
 	--primary-color-hover: #226f71;
 	--danger-color: #EB5757;
 	--danger-color-hover: #ee7575;
-	--border-color: rgba(0,0,0,.1);
+	--border-color: rgba(0,0,0,.04);
 	--default-color: #313233;
 	--default-color-8: #595a5a;
 	--default-color-6: #818182;
@@ -179,6 +179,11 @@ h4 { font-family: 'Montserrat', sans-serif; }
 .rounded { border-radius: .25rem !important; }
 .text-center { text-align: center !important; }
 .text-italic { font-style: italic !important; }
+
+.lista { padding: 0;margin: 0;display: block; }
+.lista li { display: block;border-radius: 6px;background-color: #FFF;border: 1px solid #FFF;box-shadow: 0 4px 20px 0 rgba(205,221,228,.6);transition: all .3s ease; }
+.lista li.desativado { box-shadow: 0 0 0 0 rgba(205,221,228,.9);background-color: rgba(235,235,235,.5) !important;border-color: #dadada !important; }
+.lista .lista-header { min-height: 45px; }
 
 @media (min-width: 768px) { /* COL MD */
 

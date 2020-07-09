@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { MdEdit, MdDelete } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
+import { FiCheckCircle } from "react-icons/fi";
 import { 
     IconButton, 
     Button,
@@ -65,6 +66,7 @@ function Pedidos() {
     const [ edit, setEdit ] = useState(false);
     const [ loading, setLoading ] = useState(false);
     const [ loadingCancel, setLoadingCancel ] = useState(false);
+    const [ loadingEntregue, setLoadingEntregue ] = useState(false);
 
     const [ view, setView ] = useState(false)
     const [ modalProduto, setModalProduto ] = useState(false);
@@ -254,9 +256,7 @@ function Pedidos() {
 
     function handleRemoveProduto(index, calcula = false) {
         const newArr = formulario.produtos;
-        //delete newArr[index];
         newArr.splice(index, 1);
-        console.log(newArr);
         setFormulario({ ...formulario, produtos: newArr.filter(item => item) });
         calcula && handleValor();
     }
@@ -314,7 +314,6 @@ function Pedidos() {
     async function handleConfirmDelete(){
         setLoadingCancel(true);
         const result = await apiRequest('deletarpedido', { id: formulario.id});
-        console.log(result);
         if (result) {  
             const newPedidos = pedidos.filter(item => item.id !== formulario.id);          
             setPedidos(newPedidos);
@@ -324,6 +323,19 @@ function Pedidos() {
         } else {
             handleClose();
             setLoadingCancel(false);
+        }
+    }
+
+    async function handleEntregue(item) {
+        setLoadingEntregue(true);
+        const result = await apiRequest('marcardesmarcarcomoentregue', { id: item.id});
+        console.log(result);
+        if (result) {  
+            const newArr = pedidos.map(pedido => pedido.id === result.id && { ...pedido, entregue: result.entregue } )
+            setLoadingEntregue(false);
+            setPedidos(newArr);
+        } else {
+            setLoadingEntregue(false);
         }
     }
 
@@ -608,6 +620,45 @@ function Pedidos() {
                             ) : (
                                 <>
                                 <main className="conteudo container py-5">
+                                    
+                                    <ul className="lista">
+
+                                        { pedidos.map((item, index) => {
+                                            return ( 
+                                                <li key={ index } className={ (item.entregue !== "0") ? 'desativado' : '' } >
+                                                    
+                                                    <header className="border-bottom d-flex lista-header justify-content-between align-items-center">
+                                                        <h2 className="font-13 default-color pl-3">{ item.nome }</h2>
+                                                        { existsOrError(loadingEntregue) ? (
+                                                            <CircularProgress className="mr-2" size={16} />
+                                                        ) : (
+                                                            <IconButton className="ml-2 font-11 mr-2" onClick={() => handleEntregue(item)}>
+                                                                <FiCheckCircle size={ 16 } />
+                                                            </IconButton>
+                                                        )  } 
+                                                    </header>
+                                                    
+                                                    <div className="lista-body p-3 font-13 line-height-160 default-color">
+                                                        <div className="d-flex justify-content-between align-items-center border-bottom">
+                                                            <b>Data:</b> 
+                                                            <span className="default-color-6">{ item.data }</span><br />
+                                                        </div>
+                                                        <div className="d-flex justify-content-between align-items-center border-bottom">
+                                                            <b>Valor:</b> 
+                                                            <span className="default-color-6">R$ { moneyFormatter(item.valor) }</span><br />
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <footer className="d-flex lista-footer">
+
+                                                    </footer>
+                                                </li>
+                                            )
+                                        }) }
+
+                                    </ul>
+
+                                    { /* }
                                     <TableContainer className="tabela">
                                         <Table>
                                             <TableHead>
@@ -624,7 +675,11 @@ function Pedidos() {
                                                         <TableRow key={ index } className={ (item.entregue !== "0") ? 'desativado' : '' }>
                                                             <TableCell className="font-16">
                                                                 <b>{ item.nome }</b>
-                                                                <Button className="ml-2 font-11">Marcar como entregue</Button>
+                                                                { existsOrError(loadingEntregue) ? (
+                                                                    <CircularProgress className="ml-2" size={16} />
+                                                                ) : (
+                                                                    <Button className="ml-2 font-11" onClick={() => handleEntregue(item)}>Marcar como entregue</Button>
+                                                                )  }                                                                
                                                             </TableCell>
                                                             <TableCell align="center">{ item.data }</TableCell>
                                                             <TableCell align="center">
@@ -645,6 +700,8 @@ function Pedidos() {
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
+                                    { */ }
+
                                 </main>
         
                                 <ModalComp
