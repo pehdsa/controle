@@ -116,22 +116,20 @@ function Pedidos() {
     useEffect(() => {        
         if (refProdutos.current) { refProdutos.current = false; return; }
         console.log(produtos);
-    },[produtos]);
-
-    
+    },[produtos]);   
 
     const refForm = useRef(true);
     useEffect(() => {        
         if (refForm.current) { refForm.current = false; return; }
         console.log(formularioProduto);
     },[formularioProduto]); 
-    */
+    
    const refFormulario = useRef(true);
    useEffect(() => {        
        if (refFormulario.current) { refFormulario.current = false; return; }
        console.log(formulario);
    },[formulario]); 
-   
+   */
 
     async function getData() {       
 
