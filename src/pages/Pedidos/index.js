@@ -1,16 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { MdDelete } from "react-icons/md";
-import { FiCheckCircle } from "react-icons/fi";
+
+import { FiShoppingBag, FiEdit, FiTrash2, FiCheckCircle } from "react-icons/fi";
 import { 
     IconButton, 
     Button,
-    Table, 
-    TableContainer, 
-    TableBody, 
-    TableHead, 
-    TableRow, 
-    TableCell,
     CircularProgress,
     TextField,
     Switch,
@@ -55,6 +49,7 @@ NumberFormatCustom.propTypes = {
 
 function Pedidos() {
 
+    const [ titlePage, setTitlePage ] = useState('Pedidos');
     const [ pedidos, setPedidos ] = useState([]);
     const [ tamanhos, setTamanhos ] = useState([]);
     const [ produtos, setProdutos ] = useState([]);
@@ -153,6 +148,7 @@ function Pedidos() {
 
     function handleInsert() {
         setEdit(true);
+        setTitlePage('Cadastrar Produto');
     }
 
     function handleView(item) {
@@ -163,6 +159,7 @@ function Pedidos() {
     function handleEdit(item) {
         setFormulario({ ...item });
         setEdit(true);
+        setTitlePage('Editar Produto');
     }
 
     function handleDelete(item) {
@@ -173,7 +170,7 @@ function Pedidos() {
     function handleCancel() {
         setFormulario({ id: "",nome: "", revendedor: "0",valor: "",desconto: "",produtos: [] });
         setValidate({ nome: true, revendedor: true,valor: true,desconto: true,produtos: true });
-        edit && setEdit(false);
+        edit && setEdit(false);setTitlePage('Pedidos');
     }
 
     function handleCancelProduto() {
@@ -342,7 +339,7 @@ function Pedidos() {
     return (
         <React.Fragment>
             
-            <HeaderComp title="Pedidos" />
+            <HeaderComp title={ titlePage } />
 
             { existsOrError(pageSkeleton) ? (
                 
@@ -359,11 +356,7 @@ function Pedidos() {
                 <>
                     { existsOrError(edit) ? (
                         <>
-                        <main className="conteudo container py-5">
-
-                            <header className="d-flex justify-content-between align-items-center border-bottom mb-5 pb-3">
-                                <h2 className="font-18 default-color-8" >Adicionar pedido</h2>
-                            </header>
+                        <main className="conteudo container py-4">
 
                             <FormControlLabel
                                 control={
@@ -418,7 +411,7 @@ function Pedidos() {
 
                                                     <div className="action d-flex align-items-center justify-content-center px-3">                                                        
                                                         <IconButton className="mx-1" onClick={() => handleRemoveProduto(index, true) }>
-                                                            <MdDelete size={ 20 } className="black-color-30" />
+                                                            <FiTrash2 size={ 20 } className="black-color-30" />
                                                         </IconButton>
                                                     </div>
                                                 </div>
@@ -591,7 +584,7 @@ function Pedidos() {
 
                                                     <div className="action d-flex align-items-center justify-content-center px-3">                                                    
                                                         <IconButton className="mx-1" onClick={() => handleRemoveProduto(index) }>
-                                                            <MdDelete size={ 20 } className="black-color-30" />
+                                                            <FiTrash2 size={ 20 } className="black-color-30" />
                                                         </IconButton>
                                                     </div>
                                                 </div>
@@ -619,7 +612,7 @@ function Pedidos() {
                                 </main>
                             ) : (
                                 <>
-                                <main className="conteudo container py-5">
+                                <main className="conteudo container py-4">
                                     
                                     <ul className="lista">
 
@@ -630,7 +623,7 @@ function Pedidos() {
                                                     <header className="border-bottom d-flex lista-header justify-content-between align-items-center">
                                                         <h2 className="font-13 default-color pl-3">{ item.nome }</h2>
                                                         { existsOrError(loadingEntregue) ? (
-                                                            <CircularProgress className="mr-2" size={16} />
+                                                            <CircularProgress className="mr-3" size={16} />
                                                         ) : (
                                                             <IconButton className="ml-2 font-11 mr-2" onClick={() => handleEntregue(item)}>
                                                                 <FiCheckCircle size={ 16 } />
@@ -638,19 +631,33 @@ function Pedidos() {
                                                         )  } 
                                                     </header>
                                                     
-                                                    <div className="lista-body p-3 font-13 line-height-160 default-color">
-                                                        <div className="d-flex justify-content-between align-items-center border-bottom">
-                                                            <b>Data:</b> 
-                                                            <span className="default-color-6">{ item.data }</span><br />
+                                                    <div className="lista-body px-3 py-2 font-13 line-height-160 default-color">
+                                                        <div className="d-flex justify-content-between align-items-center py-2 px-2">
+                                                            <div><b>Data:</b></div>
+                                                            <div><span className="default-color-6">{ item.data }</span></div>
                                                         </div>
-                                                        <div className="d-flex justify-content-between align-items-center border-bottom">
-                                                            <b>Valor:</b> 
-                                                            <span className="default-color-6">R$ { moneyFormatter(item.valor) }</span><br />
+                                                        <div className="d-flex justify-content-between align-items-center py-2 px-2">
+                                                            <div><b>Valor:</b></div>
+                                                            <div><span className="default-color-6">R$ { moneyFormatter(item.valor) }</span></div>
                                                         </div>
                                                     </div>
                                                     
-                                                    <footer className="d-flex lista-footer">
-
+                                                    <footer className="d-flex lista-footer border-top">
+                                                        <div className="d-flex flex-fill">
+                                                            <Button fullWidth className="font-10 default-color-8" onClick={() => handleView(item)}>
+                                                                <FiShoppingBag size={ 14 } className="mr-1" />Produtos
+                                                            </Button>
+                                                        </div>
+                                                        <div className="d-flex flex-fill">
+                                                            <Button fullWidth className="font-10 default-color-8" onClick={() => handleEdit(item)}>
+                                                                <FiEdit size={ 14 } className="mr-1" />Editar
+                                                            </Button>
+                                                        </div>
+                                                        <div className="d-flex flex-fill">
+                                                            <Button fullWidth className="font-10 default-color-8" onClick={() => handleDelete(item)}>
+                                                                <FiTrash2 size={ 14 } className="mr-1" />Excluir
+                                                            </Button>
+                                                        </div>
                                                     </footer>
                                                 </li>
                                             )
@@ -658,73 +665,27 @@ function Pedidos() {
 
                                     </ul>
 
-                                    { /* }
-                                    <TableContainer className="tabela">
-                                        <Table>
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell width="45%">Nome</TableCell>
-                                                    <TableCell width="20%" align="center">Data</TableCell>
-                                                    <TableCell width="20%" align="center">Produtos</TableCell>
-                                                    <TableCell width="15%" align="center">Ações</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                { pedidos.map((item, index) => {
-                                                    return ( 
-                                                        <TableRow key={ index } className={ (item.entregue !== "0") ? 'desativado' : '' }>
-                                                            <TableCell className="font-16">
-                                                                <b>{ item.nome }</b>
-                                                                { existsOrError(loadingEntregue) ? (
-                                                                    <CircularProgress className="ml-2" size={16} />
-                                                                ) : (
-                                                                    <Button className="ml-2 font-11" onClick={() => handleEntregue(item)}>Marcar como entregue</Button>
-                                                                )  }                                                                
-                                                            </TableCell>
-                                                            <TableCell align="center">{ item.data }</TableCell>
-                                                            <TableCell align="center">
-                                                                <Button color="primary" className="font-12" onClick={() => handleView(item)}>Ver Produtos</Button>
-                                                            </TableCell>
-                                                            <TableCell align="center">                                                        
-                                                                <IconButton onClick={() => handleEdit(item)}>
-                                                                    <MdEdit size={ 20 } className="black-color-30" />
-                                                                </IconButton>
-                                                                <IconButton onClick={() => handleDelete(item)}>
-                                                                    <MdDelete size={ 20 } className="black-color-30" />
-                                                                </IconButton>
-                                                            </TableCell>                            
-                                                        </TableRow>
-                                                    )
-                                                }) }
-                                                
-                                            </TableBody>
-                                        </Table>
-                                    </TableContainer>
-                                    { */ }
-
                                 </main>
         
                                 <ModalComp
                                     modalOpen={view}
                                     callbackCloseModal={handleCloseView}
-                                    title={ `Produtos para ${ formulario.nome }` }
+                                    title="Produtos"
                                 >
         
-                                    <div className="produtos">
+                                    <div className="lista-produtos">
                                             
                                         { existsOrError(formulario.produtos) && formulario.produtos.map(item => {
                                             return (
                                                 
-                                                <div className="d-flex p-2">
-                                                    <div className="d-flex flex-grow-1 align-items-center font-14 pl-1">
-                                                        <div>
-                                                            <b>{ item.produtonome }</b><br />
-                                                            <span className="font-12 default-color-6">{ item.estampa }</span>
-                                                        </div>
+                                                <div className="item d-flex p-2">
+                                                    <div>
+                                                        <div className="font-14 pb-1"><b>{ item.produtonome }</b></div>
+                                                        <div className="font-12 default-color-4"><b>Estampa:</b> { item.estampa }</div>
+                                                        <div className="font-12 default-color-4"><b>Qtde:</b> { `${item.quantidade} ${ (item.quantidade > 1) ? 'unidades' : 'unidade' }` }</div>
+                                                        <div className="font-12 default-color-4"><b>Valor:</b> R$ { moneyFormatter(item.valor) }</div>
                                                     </div>
-                                                    <div className="qtde px-3 d-flex align-items-center justify-content-center font-12 default-color-6 border-left">
-                                                        { `${item.quantidade} ${ (item.quantidade > 1) ? 'unidades' : 'unidade' }` }
-                                                    </div>                                        
+                                                                                    
                                                 </div>    
         
                                             )
