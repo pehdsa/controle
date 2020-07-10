@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiMenu, FiSearch, FiClipboard, FiUser, FiShoppingBag } from "react-icons/fi";
+import { FiMenu, FiSearch, FiClipboard, FiBarChart2, FiShoppingBag } from "react-icons/fi";
 import { IconButton, Drawer } from '@material-ui/core/';
 import { NavLink } from 'react-router-dom';
 
@@ -56,8 +56,8 @@ function HeaderComp(props) {
                     <NavLink to="/produtos" className="d-flex align-items-center font-14" activeClassName="active" exact >
                         <FiShoppingBag size={ 20 } className="mr-2" />Produtos
                     </NavLink>
-                    <NavLink to="/revendedores" className="d-flex align-items-center font-14" activeClassName="active" exact >
-                        <FiUser size={ 20 } className="mr-2" />Revendedores
+                    <NavLink to="/relatorios" className="d-flex align-items-center font-14" activeClassName="active" exact >
+                        <FiBarChart2 size={ 20 } className="mr-2" />Relatórios
                     </NavLink>
 
                 </aside>

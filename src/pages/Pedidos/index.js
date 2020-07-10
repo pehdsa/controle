@@ -523,7 +523,7 @@ function Pedidos() {
                                 remove={ true }
                                 border={ true }
                                 classes="p-2 my-4"
-                                callbackClick={(index) => handleRemoveProduto(index, true)}
+                                callbackClick={(index) => handleRemoveProduto(index)}
                             />
 
                             { existsOrError(formulario.produtos) && (

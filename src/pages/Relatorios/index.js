@@ -5,7 +5,7 @@ function Revendedores() {
     return (
         <React.Fragment>
             
-            <HeaderComp title="Revenddores" />
+            <HeaderComp title="Relatorios" />
 
             
 
