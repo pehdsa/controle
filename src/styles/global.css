@@ -222,6 +222,7 @@ h4 { font-family: 'Montserrat', sans-serif; }
 .relatorios .item { position: relative;display: block;border-radius: 6px;background-color: #FFF;border: 1px solid #FFF;box-shadow: 0 4px 20px 0 rgba(205,221,228,.6);margin-bottom: 20px;overflow: hidden; }
 .relatorios .item .icone { position: absolute;top: 50%;right: 0;transform: translate(35%, -50%) rotate(-25deg);opacity: .15; }
 
+.MuiDialog-paperFullScreen { margin: 0 !important; }
 
 @media (min-width: 768px) { /* COL MD */
 
