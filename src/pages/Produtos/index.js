@@ -1,31 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { MdRemoveRedEye, MdEdit, MdDelete } from "react-icons/md";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 import { 
-    IconButton, 
     Button,
-    Table, 
-    TableContainer, 
-    TableBody, 
-    TableHead, 
-    TableRow, 
-    TableCell,
     TextField,
     CircularProgress,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
     FormControlLabel,
     Switch,
 } from '@material-ui/core/';
 import NumberFormat from 'react-number-format';
-
+import { existsOrError, notify, apiRequest, moneyFormatter } from '../../utils';
 
 import HeaderComp from '../../components/headerComp';
 import ActionsComp from '../../components/actionsComp';
-import { existsOrError, notify, apiRequest, moneyFormatter } from '../../utils';
+import ModalComp from '../../components/modalComp';
+
 
 function NumberFormatCustom(props) {
     const { inputRef, onChange, ...other } = props;
@@ -58,8 +47,9 @@ NumberFormatCustom.propTypes = {
 
 function Produtos() {
 
-    const [ produtos, setProdutos ] = useState([]);    
+    const [ titlePage, setTitlePage ] = useState('Produtos');
 
+    const [ produtos, setProdutos ] = useState([]);
     const [ pageSkeleton, setPageSkeleton ] = useState(true);
     const [ edit, setEdit ] = useState(false);
     const [ loading, setLoading ] = useState(false);
@@ -98,9 +88,15 @@ function Produtos() {
         setEdit(true);
     }
 
+    function handleAdd() {
+        setEdit(true);
+        setTitlePage('Cadastrar Produtos');
+    }
+
     function handleEdit(item) {
         setFormulario({ ...item });
         setEdit(true);
+        setTitlePage('Editar Produtos');
     }
 
     function handleDelete(item) {
@@ -111,7 +107,7 @@ function Produtos() {
     function handleCancel() {
         setFormulario({ id: "", nome: "", valorpadrao: "", valorrevendedor: "", comtamanho: "0" });
         setValidate({ nome: true, valorpadrao: true, valorrevendedor: true, });
-        edit && setEdit(false);
+        edit && setEdit(false);setTitlePage('Produtos');
     }
 
     function handleClose() {
@@ -145,7 +141,7 @@ function Produtos() {
         setLoadingCancel(true);
         const result = await apiRequest('deletarproduto', { id: formulario.id});
         if (result) {  
-            const newProducts = produtos.filter(item => item.id != formulario.id);          
+            const newProducts = produtos.filter(item => item.id !== formulario.id);          
             setProdutos(newProducts);
             handleClose();
             handleCancel();
@@ -164,7 +160,7 @@ function Produtos() {
             } else {
                 const produtosEditados = [];
                 produtos.forEach(item => {
-                    if(item.id == formulario.id) {
+                    if(item.id === formulario.id) {
                         produtosEditados.push({ ...result })
                     } else {
                         produtosEditados.push({ ...item });
@@ -182,7 +178,7 @@ function Produtos() {
     return (
         <React.Fragment>
             
-            <HeaderComp title="Produtos" />
+            <HeaderComp title={ titlePage } />
 
             {
                 existsOrError(pageSkeleton) ? (
@@ -198,11 +194,19 @@ function Produtos() {
                     <>
                         { existsOrError(edit) ? (
                             <>
-                                <main className="conteudo container py-5">
+                                <main className="conteudo container py-4">
 
-                                    <header class="d-flex justify-content-between align-items-center border-bottom mb-5 pb-3">
-                                        <h2 className="font-18 default-color-8" >Adicionar produto</h2>
-                                    </header>                                    
+                                    <FormControlLabel
+                                        control={
+                                            <Switch 
+                                                checked={ formulario.comtamanho === "1" ? true : false} 
+                                                onChange={() => setFormulario({ ...formulario, comtamanho: formulario.comtamanho === "1" ? "0" : "1" })} 
+                                                name="comtamanho" 
+                                            />
+                                        }
+                                        label="Com Tamanho"
+                                        className="mb-3"
+                                    />
                                     
                                     <TextField 
                                         autoFocus
@@ -229,7 +233,6 @@ function Produtos() {
                                             inputComponent: NumberFormatCustom,
                                         }}
                                     />
-
                                     
                                     <TextField  
                                         label="Valor para revendedor" 
@@ -243,18 +246,7 @@ function Produtos() {
                                         InputProps={{
                                             inputComponent: NumberFormatCustom,
                                         }}
-                                    />
-
-                                    <FormControlLabel
-                                        control={
-                                            <Switch 
-                                                checked={ formulario.comtamanho === "1" ? true : false} 
-                                                onChange={() => setFormulario({ ...formulario, comtamanho: formulario.comtamanho === "1" ? "0" : "1" })} 
-                                                name="comtamanho" 
-                                            />
-                                        }
-                                        label="Com Tamanho"
-                                    />
+                                    />                                    
 
                                     <div className="d-flex pt-3 justify-content-center align-items-center">
                                         <Button variant="outlined" size="large" className="mx-2" onClick={() => !existsOrError(loading) && handleCancel()}>Cancelar</Button>
@@ -284,78 +276,74 @@ function Produtos() {
                                 ) : (
 
                                     <>
-                                        <main className="conteudo container py-5">
-                                            <TableContainer className="tabela">
-                                                <Table>
-                                                    <TableHead>
-                                                        <TableRow>
-                                                            <TableCell align="left" width="40%">Nome</TableCell>
-                                                            <TableCell align="center" width="20%">Preço</TableCell>
-                                                            <TableCell align="center" width="20%">Preço Revendedor</TableCell>
-                                                            <TableCell align="center" width="20%">Ações</TableCell>                            
-                                                        </TableRow>
-                                                    </TableHead>
-                                                    <TableBody>
-                                                        { produtos.map((item, index) => {
-                                                            return (
-                                                                <TableRow key={ index }>
-                                                                    <TableCell align="left" className="font-16"><b>{ item.nome }</b></TableCell>
-                                                                    <TableCell align="center">R$ { moneyFormatter(item.valorpadrao) }</TableCell>
-                                                                    <TableCell align="center">R$ { moneyFormatter(item.valorrevendedor) }</TableCell>
-                                                                    <TableCell align="center">                                                                        
+                                        <main className="conteudo container py-4">
 
-                                                                        <IconButton onClick={() => handleEdit(item)}>
-                                                                            <MdEdit size={ 20 } className="black-color-30" />
-                                                                        </IconButton>
-                                                                        <IconButton onClick={() => handleDelete(item)}>
-                                                                            <MdDelete size={ 20 } className="black-color-30" />
-                                                                        </IconButton>
-                                                                    </TableCell>                            
-                                                                </TableRow>
-                                                            )
-                                                        }) }
-                                                        
-                                                    </TableBody>
-                                                </Table>
-                                            </TableContainer>
+                                            <ul className="lista">
+                                                { produtos.map((item, index) => {
+                                                    return (
+                                                        <li key={ index }>
+                                                    
+                                                            <header className="border-bottom d-flex lista-header justify-content-between align-items-center">
+                                                                <h2 className="font-13 default-color pl-3">{ item.nome }</h2>                                                               
+                                                            </header>
+                                                            
+                                                            <div className="lista-body px-3 py-2 font-13 line-height-160 default-color">
+                                                                
+                                                                <div className="d-flex justify-content-between align-items-center py-2 px-2">
+                                                                    <div><b>Preço:</b></div>
+                                                                    <div><span className="default-color-6">R$ {  moneyFormatter(item.valorpadrao) }</span></div>
+                                                                </div>
+                                                                <div className="d-flex justify-content-between align-items-center py-2 px-2">
+                                                                    <div><b>Preço revendedor:</b></div>
+                                                                    <div><span className="default-color-6">R$ { moneyFormatter(item.valorrevendedor) }</span></div>
+                                                                </div>
+
+                                                            </div>
+                                                            
+                                                            <footer className="d-flex lista-footer border-top">                                                               
+                                                                <div className="d-flex flex-fill">
+                                                                    <Button fullWidth className="font-10 default-color-8" onClick={() => handleEdit(item)}>
+                                                                        <FiEdit size={ 14 } className="mr-1" />Editar
+                                                                    </Button>
+                                                                </div>
+                                                                <div className="d-flex flex-fill">
+                                                                    <Button fullWidth className="font-10 default-color-8" onClick={() => handleDelete(item)}>
+                                                                        <FiTrash2 size={ 14 } className="mr-1" />Excluir
+                                                                    </Button>
+                                                                </div>
+                                                            </footer>
+
+                                                        </li>
+                                                    )
+                                                })}
+                                            </ul>
+
                                         </main>
 
-                                        
-                                        <Dialog
-                                            open={deleteMessage}
-                                            onClose={handleClose}
-                                            aria-labelledby="alert-dialog-title"
-                                            aria-describedby="alert-dialog-description"
+                                        <ModalComp
+                                            modalOpen={deleteMessage}
+                                            callbackCloseModal={handleClose}
+                                            title="Deletar Produto"
                                         >
-                                            <DialogTitle id="alert-dialog-title">
-                                                Excluir produto
-                                            </DialogTitle>
-                                            <DialogContent>
-                                                <DialogContentText id="alert-dialog-description">
-                                                    Tem certeza que deseja excluir o produto?
-                                                </DialogContentText>
-                                            </DialogContent>
-                                            <DialogActions>
-                                                { loadingCancel ? (
-                                                    <div className="p-2">
-                                                        <CircularProgress size={ 16 } thickness={ 4 } color="primary" />
-                                                    </div>
+                
+                                            <div className="text-center pt-2 pb-3">Deseja realmente deletar este produto?</div>
+
+                                            <div className="d-flex pt-3 justify-content-center align-items-center pb-3">
+                                                { existsOrError(loadingCancel) ? (
+                                                    <CircularProgress size={ 22 } thickness={ 4 } />
                                                 ) : (
-                                                    <> 
-                                                        <Button onClick={handleClose} color="primary">
-                                                            Não
-                                                        </Button>
-                                                        <Button onClick={handleConfirmDelete} color="primary" autoFocus>
-                                                            Sim
-                                                        </Button>
+                                                    <>
+                                                    <Button onClick={handleClose} variant="outlined" size="large" className="mx-2">Não</Button>
+                                                    <Button onClick={() => handleConfirmDelete() } variant="contained" color="secondary" className="mx-2" size="large">Sim</Button>
                                                     </>
-                                                ) }
+                                                ) }                            
                                                 
-                                            </DialogActions>
-                                        </Dialog>
+                                            </div>
+                
+                                        </ModalComp>                                        
 
                                         <ActionsComp                                             
-                                            callbackAdd={() => setEdit(true)}
+                                            callbackAdd={() => handleAdd()}
                                         />
 
                                     </>

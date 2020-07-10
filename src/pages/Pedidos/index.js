@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-
-import { FiShoppingBag, FiEdit, FiTrash2, FiCheckCircle } from "react-icons/fi";
+import { FiShoppingBag, FiEdit, FiTrash2, FiCheckCircle, FiX } from "react-icons/fi";
 import { 
     IconButton, 
     Button,
@@ -16,6 +15,8 @@ import HeaderComp from '../../components/headerComp';
 import ActionsComp from '../../components/actionsComp';
 import ModalComp from '../../components/modalComp';
 import ModalFullComp from '../../components/modalFullComp';
+import ListProductComp from '../../components/listProductComp';
+
 import { existsOrError, notify, apiRequest, moneyFormatter } from '../../utils';
 
 function NumberFormatCustom(props) {
@@ -55,6 +56,7 @@ function Pedidos() {
     const [ produtos, setProdutos ] = useState([]);
 
     const [ cmTamanho, setCmTamanho ] = useState(false);
+    const [ strSearch, setStrSearch ] = useState('');
 
 
     const [ pageSkeleton, setPageSkeleton ] = useState(true);
@@ -101,32 +103,6 @@ function Pedidos() {
     useEffect(() => {
         getData();
     },[]);
-    
-    /*
-    const refTam = useRef(true);
-    useEffect(() => {        
-        if (refTam.current) { refTam.current = false; return; }
-        console.log(tamanhos);
-    },[tamanhos]);
-
-    const refProdutos = useRef(true);
-    useEffect(() => {        
-        if (refProdutos.current) { refProdutos.current = false; return; }
-        console.log(produtos);
-    },[produtos]);   
-
-    const refForm = useRef(true);
-    useEffect(() => {        
-        if (refForm.current) { refForm.current = false; return; }
-        console.log(formularioProduto);
-    },[formularioProduto]); 
-    
-   const refFormulario = useRef(true);
-   useEffect(() => {        
-       if (refFormulario.current) { refFormulario.current = false; return; }
-       console.log(formulario);
-   },[formulario]); 
-   */
 
     async function getData() {       
 
@@ -326,14 +302,31 @@ function Pedidos() {
     async function handleEntregue(item) {
         setLoadingEntregue(true);
         const result = await apiRequest('marcardesmarcarcomoentregue', { id: item.id});
-        console.log(result);
-        if (result) {  
-            const newArr = pedidos.map(pedido => pedido.id === result.id && { ...pedido, entregue: result.entregue } )
+        if (result) {
+            const newArr = pedidos.map(pedido => pedido.id === item.id ? { ...pedido, entregue: result.entregue } : { ...pedido } ) 
             setLoadingEntregue(false);
             setPedidos(newArr);
         } else {
             setLoadingEntregue(false);
         }
+    }
+
+    async function handleSearch(text) {
+        setPageSkeleton(true);
+        const result = await apiRequest('pesquisarpedido', { string: text});
+        if (result) {
+            setPageSkeleton(false);
+            setStrSearch(text);
+            setPedidos(result);
+        } else {
+            setPageSkeleton(false);
+        }
+    }
+
+    function handleClearSearch() {
+        setPageSkeleton(true);
+        setStrSearch('');
+        getData()
     }
 
     return (
@@ -385,45 +378,13 @@ function Pedidos() {
                                 <Button variant="contained" color="primary" onClick={() => setModalProduto(true)}>Adicionar Produto</Button>
                             </div>
 
-                            <div className="lista-produtos border rounded p-2 mb-3">
-                                { formulario.produtos.length > 0 ? (
-                                    <>
-                                        { formulario.produtos.map((item, index) => {
-                                            return (
-                                                <div key={ index } className="item d-flex align-items-center py-3 pl-3">
-
-                                                    <div className="flex-grow-1">
-                                                        <div>
-                                                            <div className="font-16"><b>{ item.produtonome }</b></div>
-                                                            <span className="font-14 default-color-6">{ item.estampa }</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div className="px-3 text-center">
-                                                        <div className="default-color font-14 mb-1"><b>Valor</b></div>
-                                                        <div className="default-color-6 font-12">R$ { moneyFormatter(item.valor) }</div>
-                                                    </div>
-                                                    
-                                                    <div className="px-3 text-center">
-                                                        <div className="default-color font-14 mb-1"><b>Qtde</b></div>
-                                                        <div className="default-color-6 font-12">{ item.quantidade }</div>
-                                                    </div>
-
-                                                    <div className="action d-flex align-items-center justify-content-center px-3">                                                        
-                                                        <IconButton className="mx-1" onClick={() => handleRemoveProduto(index, true) }>
-                                                            <FiTrash2 size={ 20 } className="black-color-30" />
-                                                        </IconButton>
-                                                    </div>
-                                                </div>
-                                            )
-                                        }) }
-                                    </>
-                                ) : (
-                                    <div className="py-4 text-center default-color-4 text-italic font-12">
-                                        Nenhum produto
-                                    </div>
-                                ) }
-                            </div>
+                            <ListProductComp
+                                produtos={ formulario.produtos } 
+                                remove={ true }
+                                border={ true }
+                                classes="p-2 mb-3"
+                                callbackClick={(index) => handleRemoveProduto(index, true)}
+                            />                            
 
                             <TextField 
                                 label="Valor" 
@@ -556,46 +517,19 @@ function Pedidos() {
                                 <Button onClick={() => { handleCloseModalProduto();setFormulario({ ...formulario, produtos: [], valor: "" }); } } variant="outlined" size="large" className="mx-2">{ formulario.produtos.length > 0 ? 'Limpar' : 'Cancelar' }</Button>
                                 <Button onClick={() => handleInsertProduto() } variant="contained" className="btn-primary mx-2" size="large">Adicionar</Button>
                             </div>
-                            
-                            { formulario.produtos.length > 0 && (
-                                <>
-                                <div className="lista-produtos border rounded p-2 my-4">                                
-                                    <>
-                                        { formulario.produtos.map((item, index) => {
-                                            return (
-                                                <div key={ index } className="item d-flex align-items-center py-3 pl-3">
 
-                                                    <div className="flex-grow-1">
-                                                        <div>
-                                                            <div className="font-16"><b>{ item.produtonome }</b></div>
-                                                            <span className="font-14 default-color-6">{ item.estampa }</span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div className="px-3 text-center">
-                                                        <div className="default-color font-14 mb-1"><b>Valor</b></div>
-                                                        <div className="default-color-6 font-12">R$ { moneyFormatter(item.valor) }</div>
-                                                    </div>
-                                                    
-                                                    <div className="px-3 text-center">
-                                                        <div className="default-color font-14 mb-1"><b>Qtde</b></div>
-                                                        <div className="default-color-6 font-12">{ item.quantidade }</div>
-                                                    </div>
+                            <ListProductComp
+                                produtos={ formulario.produtos } 
+                                remove={ true }
+                                border={ true }
+                                classes="p-2 my-4"
+                                callbackClick={(index) => handleRemoveProduto(index, true)}
+                            />
 
-                                                    <div className="action d-flex align-items-center justify-content-center px-3">                                                    
-                                                        <IconButton className="mx-1" onClick={() => handleRemoveProduto(index) }>
-                                                            <FiTrash2 size={ 20 } className="black-color-30" />
-                                                        </IconButton>
-                                                    </div>
-                                                </div>
-                                            )
-                                        }) }                                
-                                    </>                               
-                                </div>
-                                <div className="d-flex pt-3 justify-content-center align-items-center">
+                            { existsOrError(formulario.produtos) && (
+                                 <div className="d-flex pt-2 pb-3 justify-content-center align-items-center">
                                     <Button onClick={() => handleCloseModalProduto() } variant="contained" className="btn-primary mx-2" size="large">Finalizar</Button>
                                 </div>
-                                </>
                             ) }
 
                         </ModalFullComp>
@@ -613,6 +547,15 @@ function Pedidos() {
                             ) : (
                                 <>
                                 <main className="conteudo container py-4">
+
+                                    { existsOrError(strSearch) && (
+                                        <div className="d-flex justify-content-between align-items-center border-bottom pb-1 mb-3">
+                                            <div className="font-12 default-color-8">Pesquisado por: <b>{ strSearch }</b></div>
+                                            <IconButton className="modal-close" onClick={handleClearSearch}>
+                                                <FiX size={ 20 } className="default-color-6" />
+                                            </IconButton>
+                                        </div>
+                                    ) }                                    
                                     
                                     <ul className="lista">
 
@@ -643,21 +586,29 @@ function Pedidos() {
                                                     </div>
                                                     
                                                     <footer className="d-flex lista-footer border-top">
+
                                                         <div className="d-flex flex-fill">
                                                             <Button fullWidth className="font-10 default-color-8" onClick={() => handleView(item)}>
                                                                 <FiShoppingBag size={ 14 } className="mr-1" />Produtos
                                                             </Button>
                                                         </div>
-                                                        <div className="d-flex flex-fill">
-                                                            <Button fullWidth className="font-10 default-color-8" onClick={() => handleEdit(item)}>
-                                                                <FiEdit size={ 14 } className="mr-1" />Editar
-                                                            </Button>
-                                                        </div>
-                                                        <div className="d-flex flex-fill">
-                                                            <Button fullWidth className="font-10 default-color-8" onClick={() => handleDelete(item)}>
-                                                                <FiTrash2 size={ 14 } className="mr-1" />Excluir
-                                                            </Button>
-                                                        </div>
+
+                                                        { item.entregue === "0" && (
+                                                            <>
+                                                            <div className="d-flex flex-fill">
+                                                                <Button fullWidth className="font-10 default-color-8" onClick={() => handleEdit(item)}>
+                                                                    <FiEdit size={ 14 } className="mr-1" />Editar
+                                                                </Button>
+                                                            </div>
+                                                            <div className="d-flex flex-fill">
+                                                                <Button fullWidth className="font-10 default-color-8" onClick={() => handleDelete(item)}>
+                                                                    <FiTrash2 size={ 14 } className="mr-1" />Excluir
+                                                                </Button>
+                                                            </div>
+                                                            </>
+                                                        ) }
+                                                        
+                                                        
                                                     </footer>
                                                 </li>
                                             )
@@ -671,27 +622,8 @@ function Pedidos() {
                                     modalOpen={view}
                                     callbackCloseModal={handleCloseView}
                                     title="Produtos"
-                                >
-        
-                                    <div className="lista-produtos">
-                                            
-                                        { existsOrError(formulario.produtos) && formulario.produtos.map(item => {
-                                            return (
-                                                
-                                                <div className="item d-flex p-2">
-                                                    <div>
-                                                        <div className="font-14 pb-1"><b>{ item.produtonome }</b></div>
-                                                        <div className="font-12 default-color-4"><b>Estampa:</b> { item.estampa }</div>
-                                                        <div className="font-12 default-color-4"><b>Qtde:</b> { `${item.quantidade} ${ (item.quantidade > 1) ? 'unidades' : 'unidade' }` }</div>
-                                                        <div className="font-12 default-color-4"><b>Valor:</b> R$ { moneyFormatter(item.valor) }</div>
-                                                    </div>
-                                                                                    
-                                                </div>    
-        
-                                            )
-                                        }) }
-        
-                                    </div>
+                                >                                    
+                                    <ListProductComp produtos={ formulario.produtos } />                                   
         
                                 </ModalComp>
 
@@ -718,10 +650,8 @@ function Pedidos() {
                                 </ModalComp>
                 
                                 <ActionsComp 
-                                    //search={ true }
-                                    //callbackSearch={() => alert('search')}
-                                    //filter={ true }
-                                    //callbackFilter={() => alert('filter')}
+                                    search={ true }
+                                    callbackSearch={(text) => handleSearch(text)}
                                     callbackAdd={() => handleInsert()}
                                 />
                                 </>
