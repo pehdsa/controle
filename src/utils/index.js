@@ -3,8 +3,8 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 
-const apiUrl = "http://srtabrauner.com.br/controle/webservice/";
-const baseSite = "https://www.srtabrauner.com.br/";
+const apiUrl = "https://srtabrauner.com.br/controle/webservice/";
+const baseSite = "https://www.srtabrauner.com.br/controle";
 
 const api = axios.create({    
     baseURL: apiUrl,        

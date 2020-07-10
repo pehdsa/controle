@@ -7,7 +7,7 @@ import Relatorios from './pages/Relatorios';
 
 const Routes = () => {
     return (
-        <BrowserRouter>
+        <BrowserRouter basename="/controle">
             <Route component={ Pedidos } path="/" exact />
             <Route component={ Produtos } path="/produtos" />
             <Route component={ Relatorios } path="/relatorios" />
