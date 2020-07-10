@@ -539,7 +539,7 @@ function Pedidos() {
                     ) : (
                         
                         <>
-                            { !existsOrError(pedidos) ? (
+                            { (!existsOrError(pedidos) && !existsOrError(strSearch)) ? (
                                 <main className="conteudo d-flex flex-column justify-content-center align-items-center container py-3">
                                     <div className="default-color-4 mb-3">Nenhum item cadastrado</div>
                                     <Button className="font-12" variant="contained" onClick={handleInsert} >Adicionar item</Button>
