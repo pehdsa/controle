@@ -621,7 +621,7 @@ function Pedidos() {
                                 <ModalComp
                                     modalOpen={view}
                                     callbackCloseModal={handleCloseView}
-                                    title="Produtos"
+                                    title={ `Produtos (${formulario.nome})` }
                                 >                                    
                                     <ListProductComp produtos={ formulario.produtos } />                                   
         

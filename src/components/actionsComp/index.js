@@ -11,7 +11,7 @@ function ActionsComp(props) {
     const [ textSearch, setTextSearch ] = useState('')
 
     function handleAdd() {
-        props.callbackAdd();
+        !existsOrError(props.noinsert) && props.callbackAdd();
     }
 
     function handleFilter() {
@@ -75,9 +75,12 @@ function ActionsComp(props) {
                 </IconButton>
             ) }        
             
-            <IconButton className="adicionar my-1" onClick={handleAdd} >
-                <FiPlus size={ 25 } color="#FFF" />
-            </IconButton>
+            { !existsOrError(props.noinsert) && (
+                <IconButton className="adicionar my-1" onClick={handleAdd} >
+                    <FiPlus size={ 25 } color="#FFF" />
+                </IconButton>
+            ) }
+            
 
         </div>
         </>
