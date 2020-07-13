@@ -22,6 +22,9 @@ function listProductComp(props) {
                                     <div className="font-12 default-color-6"><b>Estampa:</b> { item.estampa }</div>
                                     <div className="font-12 default-color-6"><b>Qtde:</b> { `${item.quantidade} ${ (item.quantidade > 1) ? 'unidades' : 'unidade' }` }</div>
                                     <div className="font-12 default-color-6"><b>Valor:</b> R$ { moneyFormatter(item.valor) }</div>
+                                    { existsOrError(item.observacao) && (
+                                        <div className="font-12 default-color-6"><b>Observação:</b> { item.observacao }</div>
+                                    )}
                                 </div>
 
                                 { existsOrError(props.remove) && (

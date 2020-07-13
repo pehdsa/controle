@@ -90,7 +90,8 @@ function Pedidos() {
         tamanho: "",
         valor: "",
         estampa: "",
-        quantidade: ""
+        quantidade: "",
+        observacao: ""
     });
     const [ validateProduto, setValidateProduto ] = useState({
         produtoid: true,
@@ -157,7 +158,8 @@ function Pedidos() {
             tamanho: "",
             valor: "",
             estampa: "",
-            quantidade: ""
+            quantidade: "",
+            observacao: ""
         });
         setValidateProduto({
             produtoid: true,
@@ -511,6 +513,15 @@ function Pedidos() {
                                 value={ formularioProduto.quantidade }
                                 className="mb-3"
                                 type="number"
+                            />
+
+                            <TextField 
+                                label="Observação" 
+                                variant="outlined" 
+                                fullWidth
+                                onChange={event => setFormularioProduto({ ...formularioProduto, observacao: event.target.value })}
+                                value={ formularioProduto.observacao }
+                                className="mb-3"
                             />
 
                             <div className="d-flex pt-3 justify-content-center align-items-center">                                
