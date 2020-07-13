@@ -17,7 +17,7 @@ import ModalComp from '../../components/modalComp';
 import ModalFullComp from '../../components/modalFullComp';
 import ListProductComp from '../../components/listProductComp';
 
-import { existsOrError, notify, apiRequest, moneyFormatter } from '../../utils';
+import { existsOrError, notify, apiRequest, moneyFormatter, getDiffDate } from '../../utils';
 
 function NumberFormatCustom(props) {
     const { inputRef, onChange, ...other } = props;
@@ -577,7 +577,7 @@ function Pedidos() {
                                                     <div className="lista-body px-3 py-2 font-13 line-height-160 default-color">
                                                         <div className="d-flex justify-content-between align-items-center py-2 px-2">
                                                             <div><b>Data:</b></div>
-                                                            <div><span className="default-color-6">{ item.data }</span></div>
+                                                            <div className={ `data${( (getDiffDate(item.data) >= 3 && getDiffDate(item.data) <= 5) ? ' warning' : ((getDiffDate(item.data) > 5) ? ' danger' : '') )}` }><b>{ item.data }</b></div>
                                                         </div>
                                                         <div className="d-flex justify-content-between align-items-center py-2 px-2">
                                                             <div><b>Valor:</b></div>

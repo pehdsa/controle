@@ -74,6 +74,15 @@ const existsOrError = (value) => {
     return true;
 }
 
+const getDiffDate = (date) => {
+    const now = new Date(); // Data de hoje
+    const past = new Date( date.split('/').reverse().join('-') );
+    const diff = Math.abs(now.getTime() - past.getTime());
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+    return days;
+}
+
 
 export { 
     //api,     
@@ -81,5 +90,6 @@ export {
     existsOrError, 
     baseSite,
     apiRequest,
-    notify
+    notify,
+    getDiffDate
 }

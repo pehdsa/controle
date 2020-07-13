@@ -204,6 +204,10 @@ h4 { font-family: 'Montserrat', sans-serif; }
 .lista .lista-footer > div::after { content: '';position: absolute;top: 50%;right: 0;width: 1px;height: 70%;background-color: var(--border-color);transform: translate(0, -50%); }
 .lista .lista-footer > div:last-of-type::after { display: none; }
 
+.lista .data { color:#28a745 }
+.lista .data.warning { color: #ffc107; }
+.lista .data.danger { color: #dc3545; }
+
 .MuiDialog-paperFullWidth { width: calc(100% - 34px) !important; }
 .MuiDialog-paper { margin: 12px !important; }
 
@@ -218,7 +222,6 @@ h4 { font-family: 'Montserrat', sans-serif; }
 .search-container .btn-pesquisar { position: absolute;top: 50%;right: 0;transform: translate(0, -50%); }
 .search-wrapper .btn-fechar { position: relative;display: block;width: 100%;height: 100%;background: transparent;border: 0;z-index: 5; }
 
-.relatorios { }
 .relatorios .item { position: relative;display: block;border-radius: 6px;background-color: #FFF;border: 1px solid #FFF;box-shadow: 0 4px 20px 0 rgba(205,221,228,.6);margin-bottom: 20px;overflow: hidden; }
 .relatorios .item .icone { position: absolute;top: 50%;right: 0;transform: translate(35%, -50%) rotate(-25deg);opacity: .15; }
 
