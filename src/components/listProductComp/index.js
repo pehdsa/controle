@@ -20,6 +20,11 @@ function listProductComp(props) {
                                 <div>
                                     <div className="font-14 pb-1 text-uppercase"><b>{ item.produtonome }</b></div>
                                     <div className="font-12 default-color-6"><b>Estampa:</b> { item.estampa }</div>
+                                    { ( existsOrError(item.tamanho) && item.tamanho !== "0") && (
+                                        <>
+                                        { existsOrError(props.tamanhos) && <div className="font-12 default-color-6"><b>Tamanho:</b> { props.tamanhos.filter(tamanho => tamanho.id === item.tamanho )[0].nome  }</div> }
+                                        </>
+                                    )}
                                     <div className="font-12 default-color-6"><b>Qtde:</b> { `${item.quantidade} ${ (item.quantidade > 1) ? 'unidades' : 'unidade' }` }</div>
                                     <div className="font-12 default-color-6"><b>Valor:</b> R$ { moneyFormatter(item.valor) }</div>
                                     { existsOrError(item.observacao) && (

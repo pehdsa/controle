@@ -184,6 +184,7 @@ h4 { font-family: 'Montserrat', sans-serif; }
 .modal-default .modal-header { position: relative;min-height: 45px;padding-right: 50px; }
 .modal-default .modal-close { position: absolute;top: 50%;right: 0;transform: translate(0,-50%); }
 
+.modal-default .lista-produtos .item { padding-right: .5rem !important; }
 
 .rounded { border-radius: .25rem !important; }
 .text-center { text-align: center !important; }

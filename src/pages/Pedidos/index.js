@@ -173,13 +173,27 @@ function Pedidos() {
     function handleChangeProdutos(id) {
         const nome = existsOrError(id) ? produtos.filter(produto => produto.id === id)[0].nome : "";
         const valor = existsOrError(id) ? formulario.revendedor === "1" ? produtos.filter(produto => produto.id === id)[0].valorrevendedor : produtos.filter(produto => produto.id === id)[0].valorpadrao : "";
-        existsOrError(id) ? produtos.filter(produto => produto.id === id)[0].comtamanho === "1" ? setCmTamanho(true) : setCmTamanho(false) : setCmTamanho(false) ;
+        
+        let tamanho = "";
+        if (existsOrError(id)) {
+            if (produtos.filter(produto => produto.id === id)[0].comtamanho === "1") {
+                tamanho = "1";
+                setCmTamanho(true)
+            } else {
+                setCmTamanho(false)
+            }
+        } else {
+            setCmTamanho(false)
+        }
+        
+        //existsOrError(id) ? produtos.filter(produto => produto.id === id)[0].comtamanho === "1" ? setCmTamanho(true) : setCmTamanho(false) : setCmTamanho(false) ;
         
         setFormularioProduto({
             ...formularioProduto, 
             produtoid: existsOrError(id) ? id : "", 
             produtonome: nome,
-            valor
+            valor,
+            tamanho
         });
 
     }
@@ -209,7 +223,7 @@ function Pedidos() {
     }
 
     function handleCloseView() {
-        //handleCancel(); 
+        handleCancel(); 
         setView(false);
     }
 
@@ -384,6 +398,7 @@ function Pedidos() {
                                 produtos={ formulario.produtos } 
                                 remove={ true }
                                 border={ true }
+                                tamanhos={ tamanhos }
                                 classes="p-2 mb-3"
                                 callbackClick={(index) => handleRemoveProduto(index, true)}
                             />                            
@@ -533,6 +548,7 @@ function Pedidos() {
                                 produtos={ formulario.produtos } 
                                 remove={ true }
                                 border={ true }
+                                tamanhos={ tamanhos }
                                 classes="p-2 my-4"
                                 callbackClick={(index) => handleRemoveProduto(index)}
                             />
@@ -634,7 +650,10 @@ function Pedidos() {
                                     callbackCloseModal={handleCloseView}
                                     title={ `Produtos (${formulario.nome})` }
                                 >                                    
-                                    <ListProductComp produtos={ formulario.produtos } />                                   
+                                    <ListProductComp 
+                                        tamanhos={ tamanhos }
+                                        produtos={ formulario.produtos } 
+                                    />                                   
         
                                 </ModalComp>
 
