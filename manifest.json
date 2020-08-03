@@ -2,8 +2,16 @@
   "short_name": "Srta. Brauner",
   "name": "Srta. Brauner",
   "description": "Gerencimaneto de vendas",
+  "icons": [
+    {
+      "src": "https://www.srtabrauner.com.br/controle/splash.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
   "start_url": "https://www.srtabrauner.com.br/controle/",
   "background_color": "#1090AC",
   "display": "standalone",
+  "orientation": "landscape",
   "theme_color": "#1090AC" 
 }
