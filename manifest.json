@@ -1,0 +1,9 @@
+{
+  "short_name": "Srta. Brauner",
+  "name": "Srta. Brauner",
+  "description": "Gerencimaneto de vendas",
+  "start_url": "https://www.srtabrauner.com.br/controle/",
+  "background_color": "#1090AC",
+  "display": "standalone",
+  "theme_color": "#1090AC" 
+}
