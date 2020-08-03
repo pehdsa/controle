@@ -64,27 +64,32 @@ function Revendedores() {
 
                         <div className="relatorios">
 
-                            <div className="item d-flex align-items-center p-4">
-                                <div>
-                                    <h2 className="font-28 line-height-100 primary-color">{ pedidos.naoentregue }</h2>
-                                    <small className="font-11 line-height-120 default-color-6"><b>Pedidos em Aberto</b></small>
+                            <div className="row">
+                                <div className="col-6 pr-2">
+                                    <div className="item d-flex align-items-center p-4">
+                                        <div>
+                                            <h2 className="font-28 line-height-100 primary-color">{ pedidos.naoentregue }</h2>
+                                            <small className="font-11 line-height-120 default-color-6"><b>Pedidos em Aberto</b></small>
+                                        </div>
+                                        <div className="icone primary-color">
+                                            <FiClock size={ 80 } />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="icone primary-color">
-                                    <FiClock size={ 80 } />
+                                <div className="col-6 pl-2">
+                                    <div className="item d-flex align-items-center p-4">
+                                        <div>
+                                            <h2 className="font-28 line-height-100 primary-color">{ pedidos.entregue }</h2>
+                                            <small className="font-11 line-height-120 default-color-6"><b>Pedidos Entregues</b></small>
+                                        </div>
+                                        <div className="icone primary-color">
+                                            <FiCheckCircle size={ 80 } />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="item d-flex align-items-center p-4">
-                                <div>
-                                    <h2 className="font-28 line-height-100 primary-color">{ pedidos.entregue }</h2>
-                                    <small className="font-11 line-height-120 default-color-6"><b>Pedidos Entregues</b></small>
-                                </div>
-                                <div className="icone primary-color">
-                                    <FiCheckCircle size={ 80 } />
-                                </div>
-                            </div>
-
-                            { existsOrError(produtos) && produtos.map(produto => {
+                            { /* existsOrError(produtos) && produtos.map(produto => {
                                 return (
                                     <div className="item d-flex align-items-center p-4">
                                         <div>
@@ -96,7 +101,7 @@ function Revendedores() {
                                         </div>
                                     </div>
                                 )
-                            })}                    
+                            })*/}                    
 
                             <div className="item d-flex align-items-center p-4">
                                 <div>
