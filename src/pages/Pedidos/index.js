@@ -10,6 +10,8 @@ import {
     FormControlLabel
 } from '@material-ui/core/';
 import NumberFormat from 'react-number-format';
+import moment from 'moment';
+import 'moment/locale/pt-br';
 
 import HeaderComp from '../../components/headerComp';
 import ActionsComp from '../../components/actionsComp';
@@ -111,6 +113,11 @@ function Pedidos() {
         if (result) {
             setPedidos(result);
             setPageSkeleton(false);
+
+            result.forEach(item => {
+                console.log(moment(item.datadefault).format('DD MMMM YYYY'));
+            })
+
         } else {
             setPageSkeleton(false);
         }
