@@ -114,9 +114,29 @@ function Pedidos() {
             setPedidos(result);
             setPageSkeleton(false);
 
-            result.forEach(item => {
-                console.log(moment(item.datadefault).format('DD MMMM YYYY'));
-            })
+            let arrPedidos = [];
+            let objPedidos = {};
+
+            result.forEach((el) => {
+                arrPedidos.filter(i => i.data === el.data).length == 0 && arrPedidos.push(el);
+                //console.log(moment(item.datadefault).day(0).format('DD MMMM YYYY'));
+                //console.log(moment(item.datadefault).day(6).format('DD MMMM YYYY'));
+            });
+
+            /*
+            telefones.forEach((el) => {
+                    arrTelefones.filter(i => i.tipo === el.tipo).length == 0 ? arrTelefones.push(el) : ''
+                });
+
+                arrTelefones.forEach((el) => {
+                    objTelefones = { 
+                        ...objTelefones, 
+                        [getTypePhone(el.tipo)] : telefones.filter(item => item.tipo === el.tipo)
+                    }
+                }); 
+                */
+
+            console.log(arrPedidos);
 
         } else {
             setPageSkeleton(false);
