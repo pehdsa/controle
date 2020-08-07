@@ -281,38 +281,38 @@ function Produtos() {
                                             <ul className="lista">
                                                 { produtos.map((item, index) => {
                                                     return (
-                                                        <li key={ index }>
-                                                    
-                                                            <header className="border-bottom d-flex lista-header justify-content-between align-items-center">
-                                                                <h2 className="font-13 default-color pl-3">{ item.nome }</h2>                                                               
-                                                            </header>
-                                                            
-                                                            <div className="lista-body px-3 py-2 font-13 line-height-160 default-color">
+                                                        <li key={ index } className="itens-container" >
+                                                            <div className="item">
+                                                                <header className="border-bottom d-flex lista-header justify-content-between align-items-center">
+                                                                    <h2 className="font-13 default-color pl-3">{ item.nome }</h2>                                                               
+                                                                </header>
                                                                 
-                                                                <div className="d-flex justify-content-between align-items-center py-2 px-2">
-                                                                    <div><b>Preço:</b></div>
-                                                                    <div><span className="default-color-6">R$ {  moneyFormatter(item.valorpadrao) }</span></div>
-                                                                </div>
-                                                                <div className="d-flex justify-content-between align-items-center py-2 px-2">
-                                                                    <div><b>Preço revendedor:</b></div>
-                                                                    <div><span className="default-color-6">R$ { moneyFormatter(item.valorrevendedor) }</span></div>
-                                                                </div>
+                                                                <div className="lista-body px-3 py-2 font-13 line-height-160 default-color">
+                                                                    
+                                                                    <div className="d-flex justify-content-between align-items-center py-2 px-2">
+                                                                        <div><b>Preço:</b></div>
+                                                                        <div><span className="default-color-6">R$ {  moneyFormatter(item.valorpadrao) }</span></div>
+                                                                    </div>
+                                                                    <div className="d-flex justify-content-between align-items-center py-2 px-2">
+                                                                        <div><b>Preço revendedor:</b></div>
+                                                                        <div><span className="default-color-6">R$ { moneyFormatter(item.valorrevendedor) }</span></div>
+                                                                    </div>
 
+                                                                </div>
+                                                                
+                                                                <footer className="d-flex lista-footer border-top">                                                               
+                                                                    <div className="d-flex flex-fill">
+                                                                        <Button fullWidth className="font-10 default-color-8" onClick={() => handleEdit(item)}>
+                                                                            <FiEdit size={ 14 } className="mr-1" />Editar
+                                                                        </Button>
+                                                                    </div>
+                                                                    <div className="d-flex flex-fill">
+                                                                        <Button fullWidth className="font-10 default-color-8" onClick={() => handleDelete(item)}>
+                                                                            <FiTrash2 size={ 14 } className="mr-1" />Excluir
+                                                                        </Button>
+                                                                    </div>
+                                                                </footer>
                                                             </div>
-                                                            
-                                                            <footer className="d-flex lista-footer border-top">                                                               
-                                                                <div className="d-flex flex-fill">
-                                                                    <Button fullWidth className="font-10 default-color-8" onClick={() => handleEdit(item)}>
-                                                                        <FiEdit size={ 14 } className="mr-1" />Editar
-                                                                    </Button>
-                                                                </div>
-                                                                <div className="d-flex flex-fill">
-                                                                    <Button fullWidth className="font-10 default-color-8" onClick={() => handleDelete(item)}>
-                                                                        <FiTrash2 size={ 14 } className="mr-1" />Excluir
-                                                                    </Button>
-                                                                </div>
-                                                            </footer>
-
                                                         </li>
                                                     )
                                                 })}

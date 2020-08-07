@@ -7,7 +7,10 @@ import {
     CircularProgress,
     TextField,
     Switch,
-    FormControlLabel
+    FormControlLabel,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails
 } from '@material-ui/core/';
 import NumberFormat from 'react-number-format';
 import moment from 'moment';
@@ -20,6 +23,7 @@ import ModalFullComp from '../../components/modalFullComp';
 import ListProductComp from '../../components/listProductComp';
 
 import { existsOrError, notify, apiRequest, moneyFormatter, getDiffDate } from '../../utils';
+
 
 function NumberFormatCustom(props) {
     const { inputRef, onChange, ...other } = props;
@@ -103,6 +107,8 @@ function Pedidos() {
         quantidade: true
     });
 
+    const [expanded, setExpanded] = React.useState('panel0');
+
     useEffect(() => {
         getData();
     },[]);
@@ -129,19 +135,6 @@ function Pedidos() {
 
             setPedidos(objPedidos);
             setPageSkeleton(false);
-
-            /*
-            telefones.forEach((el) => {
-                    arrTelefones.filter(i => i.tipo === el.tipo).length == 0 ? arrTelefones.push(el) : ''
-                });
-
-                arrTelefones.forEach((el) => {
-                    objTelefones = { 
-                        ...objTelefones, 
-                        [getTypePhone(el.tipo)] : telefones.filter(item => item.tipo === el.tipo)
-                    }
-                }); 
-                */
 
         } else {
             setPageSkeleton(false);
@@ -365,7 +358,10 @@ function Pedidos() {
         if (result) {
             setPageSkeleton(false);
             setStrSearch(text);
-            setPedidos(result);
+            let objPedidos = {
+                pedidos: result
+            }
+            setPedidos(objPedidos);
         } else {
             setPageSkeleton(false);
         }
@@ -376,6 +372,10 @@ function Pedidos() {
         setStrSearch('');
         getData()
     }
+
+    const handleChange = (panel) => (event, newExpanded) => {
+        setExpanded(newExpanded ? panel : false);
+    };
 
     return (
         <React.Fragment>
@@ -607,20 +607,168 @@ function Pedidos() {
                                 <>
                                 <main className="conteudo container py-4">
 
-                                    { existsOrError(strSearch) && (
+
+
+                                    { existsOrError(strSearch) ? (
+                                        <div>
                                         <div className="d-flex justify-content-between align-items-center border-bottom pb-1 mb-3">
                                             <div className="font-12 default-color-8">Pesquisado por: <b>{ strSearch }</b></div>
                                             <IconButton className="modal-close" onClick={handleClearSearch}>
                                                 <FiX size={ 20 } className="default-color-6" />
                                             </IconButton>
+                                        </div>                                  
+
+                                        <ul className="lista">
+
+                                            { Object.keys(pedidos).map((el, index) => {
+
+                                                return (
+                                                    <>
+                                                    { pedidos[el].map((item, index) => {
+                                                        return ( 
+                                                            <li key={ index } className="itens-container" >
+                                                                <div className={ `item${(item.entregue !== "0") ? ' desativado' : ''}` }>
+                                                                <header className="border-bottom d-flex lista-header justify-content-between align-items-center">
+                                                                    <h2 className="font-13 default-color pl-3">{ item.nome }</h2>
+                                                                    { existsOrError(loadingEntregue) ? (
+                                                                        <CircularProgress className="mr-3" size={16} />
+                                                                    ) : (
+                                                                        <IconButton className="ml-2 font-11 mr-2" onClick={() => handleEntregue(item)}>
+                                                                            <FiCheckCircle size={ 16 } />
+                                                                        </IconButton>
+                                                                    )  } 
+                                                                </header>
+                                                                
+                                                                <div className="lista-body px-3 py-2 font-13 line-height-160 default-color">
+                                                                    <div className="d-flex justify-content-between align-items-center py-2 px-2">
+                                                                        <div><b>Data:</b></div>
+                                                                        <div className={ `data${( (getDiffDate(item.data) >= 3 && getDiffDate(item.data) <= 5) ? ' warning' : ((getDiffDate(item.data) > 5) ? ' danger' : '') )}` }><b>{ item.data }</b></div>
+                                                                    </div>
+                                                                    <div className="d-flex justify-content-between align-items-center py-2 px-2">
+                                                                        <div><b>Valor:</b></div>
+                                                                        <div><span className="default-color-6">R$ { moneyFormatter(item.valor) }</span></div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <footer className="d-flex lista-footer border-top">
+        
+                                                                    <div className="d-flex flex-fill">
+                                                                        <Button fullWidth className="font-10 default-color-8" onClick={() => handleView(item)}>
+                                                                            <FiShoppingBag size={ 14 } className="mr-1" />Produtos
+                                                                        </Button>
+                                                                    </div>
+        
+                                                                    { item.entregue === "0" && (
+                                                                        <>
+                                                                        <div className="d-flex flex-fill">
+                                                                            <Button fullWidth className="font-10 default-color-8" onClick={() => handleEdit(item)}>
+                                                                                <FiEdit size={ 14 } className="mr-1" />Editar
+                                                                            </Button>
+                                                                        </div>
+                                                                        <div className="d-flex flex-fill">
+                                                                            <Button fullWidth className="font-10 default-color-8" onClick={() => handleDelete(item)}>
+                                                                                <FiTrash2 size={ 14 } className="mr-1" />Excluir
+                                                                            </Button>
+                                                                        </div>
+                                                                        </>
+                                                                    ) }
+                                                                    
+                                                                    
+                                                                </footer>
+                                                                </div>
+                                                            </li>
+                                                        )
+                                                    }) }
+                                                    </>
+                                                )
+                                            })}                                            
+
+                                        </ul>
                                         </div>
-                                    ) }                                    
+
+                                    ) : (
+                                        
+                                        <div className="lista cmpaddingfirst">
+                                            { Object.keys(pedidos).map((el, index) => {
+                                                return ( 
+                                                    <Accordion key={ index } square expanded={expanded === `panel${index}`} onChange={handleChange(`panel${index}`)}>
+                                                        <AccordionSummary>
+                                                            <b>{ `${ moment(el.split('|')[0]).format('DD') } à ${ moment(el.split('|')[1]).format('DD') } de ${ moment(el.split('|')[1]).format('MMMM') } de ${ moment(el.split('|')[1]).format('YYYY') }` }</b>
+                                                        </AccordionSummary>
+                                                        <AccordionDetails className="itens-container">
+                                                        
+                                                            { pedidos[el].map((item, index) => {
+                                                                return (
+                                                                    <div key={ index } className={ `item${(item.entregue !== "0") ? ' desativado' : ''}` }>
+                                                                        <header className="border-bottom d-flex lista-header justify-content-between align-items-center">
+                                                                            <h2 className="font-13 default-color pl-3">{ item.nome }</h2>
+                                                                            { existsOrError(loadingEntregue) ? (
+                                                                                <CircularProgress className="mr-3" size={16} />
+                                                                            ) : (
+                                                                                <IconButton className="ml-2 font-11 mr-2" onClick={() => handleEntregue(item)}>
+                                                                                    <FiCheckCircle size={ 16 } />
+                                                                                </IconButton>
+                                                                            )  } 
+                                                                        </header>
+                                                                        
+                                                                        <div className="lista-body px-3 py-2 font-13 line-height-160 default-color">
+                                                                            <div className="d-flex justify-content-between align-items-center py-2 px-2">
+                                                                                <div><b>Data:</b></div>
+                                                                                <div className={ `data${( (getDiffDate(item.data) >= 3 && getDiffDate(item.data) <= 5) ? ' warning' : ((getDiffDate(item.data) > 5) ? ' danger' : '') )}` }><b>{ item.data }</b></div>
+                                                                            </div>
+                                                                            <div className="d-flex justify-content-between align-items-center py-2 px-2">
+                                                                                <div><b>Valor:</b></div>
+                                                                                <div><span className="default-color-6">R$ { moneyFormatter(item.valor) }</span></div>
+                                                                            </div>
+                                                                        </div>
+                                                                        
+                                                                        <footer className="d-flex lista-footer border-top">
+
+                                                                            <div className="d-flex flex-fill">
+                                                                                <Button fullWidth className="font-10 default-color-8" onClick={() => handleView(item)}>
+                                                                                    <FiShoppingBag size={ 14 } className="mr-1" />Produtos
+                                                                                </Button>
+                                                                            </div>
+
+                                                                            { item.entregue === "0" && (
+                                                                                <>
+                                                                                <div className="d-flex flex-fill">
+                                                                                    <Button fullWidth className="font-10 default-color-8" onClick={() => handleEdit(item)}>
+                                                                                        <FiEdit size={ 14 } className="mr-1" />Editar
+                                                                                    </Button>
+                                                                                </div>
+                                                                                <div className="d-flex flex-fill">
+                                                                                    <Button fullWidth className="font-10 default-color-8" onClick={() => handleDelete(item)}>
+                                                                                        <FiTrash2 size={ 14 } className="mr-1" />Excluir
+                                                                                    </Button>
+                                                                                </div>
+                                                                                </>
+                                                                            ) }
+                                                                            
+                                                                            
+                                                                        </footer>
+                                                                    </div>
+                                                                )
+                                                            }) }
+                                                        
+                                                        </AccordionDetails>
+                                                    </Accordion>
+                                                )
+                                            })}
+                                        </div> 
+
+                                    ) }    
+
+                                      
+
+                                                
                                     
+                                    { /* }
                                     <ul className="lista">
 
                                         { Object.keys(pedidos).map((el, index) => {
                                             return ( 
-                                                <li key={ index } >
+                                                <li key={ index } className="itens-container" >
 
                                                     <div className="font-16 py-4 text-center text-uppercase default-color-4">
                                                         <b>{ `${ moment(el.split('|')[0]).format('DD') } à ${ moment(el.split('|')[1]).format('DD') } de ${ moment(el.split('|')[1]).format('MMMM') } de ${ moment(el.split('|')[1]).format('YYYY') }` }</b>
@@ -685,6 +833,7 @@ function Pedidos() {
                                         }) }
 
                                     </ul>
+                                    { */ }
 
                                 </main>
         
