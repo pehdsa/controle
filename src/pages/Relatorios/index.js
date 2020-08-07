@@ -7,9 +7,9 @@ import HeaderComp from '../../components/headerComp';
 
 import { existsOrError, apiRequest, moneyFormatter } from '../../utils';
 
+const { innerWidth: width } = window;
 
-
-function Revendedores() {
+function Relatorios() {
 
     const [ pageSkeleton, setPageSkeleton ] = useState(true);
     const [ pedidos, setPedidos ] = useState(false);
@@ -115,6 +115,31 @@ function Revendedores() {
 
                         </div>
 
+                        <hr style={{ marginBottom: 10 }} />
+
+                        <div className="semanal">
+                            <div>
+
+                                <div className="item" style={{ width: width - 20 }}>
+                                    <div>
+                                        <div>                                        
+                                            <h2 class="font-24 line-height-100 primary-color"><small>R$</small> 2.336,00</h2>
+                                            <small class="font-11 line-height-120 default-color-6"><b>Total Vendido</b></small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="item" style={{ width: width - 20 }}>
+                                    <div>aaa</div>
+                                </div>
+
+                                <div className="item" style={{ width: width - 20 }}>
+                                    <div>aaa</div>
+                                </div>
+
+                            </div>
+                        </div>
+
                     </main>
                 ) }
                 
@@ -126,4 +151,4 @@ function Revendedores() {
     )
 }
 
-export default Revendedores;
+export default Relatorios;

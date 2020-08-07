@@ -60,6 +60,8 @@ h4 { font-family: 'Montserrat', sans-serif; }
 .topo-right { width: 64px; }
 .conteudo { position: relative;min-height: 100%;z-index: 5;flex-grow: 1; }
 
+.conteudo hr { border: 0;border-bottom: 1px solid var(--border-color);margin: 30px 0; }
+
 .menu { width: var(--menu-width);height: 100%;overflow-y: auto; }
 .menu a { color: var(--default-color-8);display: block;padding: 15px 10px 15px 14px;transition: all .3s ease;font-family: 'Montserrat', sans-serif;font-weight: 500;  }
 .menu a:hover { color: var(--primary-color); background-color: #f8f8f8; }
@@ -241,6 +243,11 @@ h4 { font-family: 'Montserrat', sans-serif; }
 
 .relatorios .item { position: relative;display: block;border-radius: 6px;background-color: #FFF;border: 1px solid #FFF;box-shadow: 0 4px 20px 0 rgba(205,221,228,.6);margin-bottom: 20px;overflow: hidden; }
 .relatorios .item .icone { position: absolute;top: 50%;right: 0;transform: translate(35%, -50%) rotate(-25deg);opacity: .15; }
+
+.semanal { display: flex;margin: 0 -15px;overflow-x: scroll; }
+.semanal > div { display: flex;flex-wrap: nowrap;padding: 15px 10px; }
+.semanal .item { display: flex;flex-grow: 1;padding: 0 5px; }
+.semanal .item > div { flex: 1;padding: 1.5rem;height: 94px;position: relative;border-radius: 6px;background-color: #FFF;border: 1px solid #FFF;box-shadow: 0 4px 20px 0 rgba(205,221,228,.6);overflow: hidden; }
 
 .MuiDialog-paperFullScreen { margin: 0 !important; }
 
