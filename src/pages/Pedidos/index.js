@@ -202,7 +202,7 @@ function Pedidos() {
         let tamanho = "";
         if (existsOrError(id)) {
             if (produtos.filter(produto => produto.id === id)[0].comtamanho === "1") {
-                tamanho = "1";
+                tamanho = "3";
                 setCmTamanho(true)
             } else {
                 setCmTamanho(false)
@@ -305,10 +305,35 @@ function Pedidos() {
     async function handleRegister() {
         const result = existsOrError(formulario.id) ? await apiRequest('alterarpedido', formulario) : await apiRequest('inserirpedido', formulario);
         if (result) {            
-            if(!existsOrError(formulario.id)) {
-                setPedidos([ result, ...pedidos ])
+            if(!existsOrError(formulario.id)) {                
+                const resultKey = existsOrError(strSearch) ? 'pedidos' : `${moment(result.datadefault).day(0).format('YYYY-MM-DD')}|${moment(result.datadefault).day(6).format('YYYY-MM-DD')}`;
+                let newObj = {}
+                if (Object.keys(pedidos).includes(resultKey)) {
+                    newObj = pedidos;
+                    const arr = newObj[resultKey];
+                    newObj[resultKey] = [ result, ...arr ];                    
+                } else {
+                    newObj = {
+                        [resultKey] : [ result ],
+                        ...pedidos
+                    };
+                }
+                
+                setPedidos(newObj);                
             } else {
+                const resultKey = existsOrError(strSearch) ? 'pedidos' : `${moment(result.datadefault).day(0).format('YYYY-MM-DD')}|${moment(result.datadefault).day(6).format('YYYY-MM-DD')}`;
+                let newObj = pedidos;                
                 const pedidosEditados = [];
+                newObj[resultKey].forEach(item => {
+                    if(item.id === formulario.id) {
+                        pedidosEditados.push({ ...result })
+                    } else {
+                        pedidosEditados.push({ ...item });
+                    }
+                });
+                newObj[resultKey] = pedidosEditados;
+                setPedidos(newObj);
+                /*
                 pedidos.forEach(item => {
                     if(item.id === formulario.id) {
                         pedidosEditados.push({ ...result })
@@ -317,6 +342,7 @@ function Pedidos() {
                     }
                 });
                 setPedidos(pedidosEditados);
+                */
             }
             handleCancel();
             setLoading(false);
@@ -329,8 +355,11 @@ function Pedidos() {
         setLoadingCancel(true);
         const result = await apiRequest('deletarpedido', { id: formulario.id});
         if (result) {  
-            const newPedidos = pedidos.filter(item => item.id !== formulario.id);          
-            setPedidos(newPedidos);
+            const resultKey = existsOrError(strSearch) ? 'pedidos' : `${moment(result.datadefault).day(0).format('YYYY-MM-DD')}|${moment(result.datadefault).day(6).format('YYYY-MM-DD')}`;
+            const newObj = pedidos;
+            const newPedidos = newObj[resultKey].filter(item => item.id !== formulario.id);
+            newObj[resultKey] = newPedidos;
+            setPedidos(newObj);
             handleClose();
             handleCancel();
             setLoadingCancel(false);
@@ -344,9 +373,12 @@ function Pedidos() {
         setLoadingEntregue(true);
         const result = await apiRequest('marcardesmarcarcomoentregue', { id: item.id});
         if (result) {
-            const newArr = pedidos.map(pedido => pedido.id === item.id ? { ...pedido, entregue: result.entregue } : { ...pedido } ) 
+            const resultKey = `${moment(result.datadefault).day(0).format('YYYY-MM-DD')}|${moment(result.datadefault).day(6).format('YYYY-MM-DD')}`;
+            const newArr = pedidos[resultKey].map(pedido => pedido.id === item.id ? { ...pedido, entregue: result.entregue } : { ...pedido } ) 
+            const newObj = pedidos;
+            newObj[resultKey] = newArr;
             setLoadingEntregue(false);
-            setPedidos(newArr);
+            setPedidos(newObj);
         } else {
             setLoadingEntregue(false);
         }
@@ -624,7 +656,7 @@ function Pedidos() {
 
                                                 return (
                                                     <>
-                                                    { pedidos[el].map((item, index) => {
+                                                    {  existsOrError(pedidos[el]) && pedidos[el].map((item, index) => {
                                                         return ( 
                                                             <li key={ index } className="itens-container" >
                                                                 <div className={ `item${(item.entregue !== "0") ? ' desativado' : ''}` }>
@@ -697,7 +729,7 @@ function Pedidos() {
                                                         </AccordionSummary>
                                                         <AccordionDetails className="itens-container">
                                                         
-                                                            { pedidos[el].map((item, index) => {
+                                                            { existsOrError(pedidos[el]) && pedidos[el].map((item, index) => {
                                                                 return (
                                                                     <div key={ index } className={ `item${(item.entregue !== "0") ? ' desativado' : ''}` }>
                                                                         <header className="border-bottom d-flex lista-header justify-content-between align-items-center">
