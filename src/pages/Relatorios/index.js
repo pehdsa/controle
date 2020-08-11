@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiShoppingBag, FiCheckCircle, FiClock } from "react-icons/fi";
 import { MdLocalAtm } from "react-icons/md";
 import { CircularProgress } from '@material-ui/core/';
@@ -24,12 +24,6 @@ function Relatorios() {
         getData();
     },[]);
 
-    const refWidth = useRef(true);
-    useEffect(() => {        
-        if (refWidth.current) { refWidth.current = false; return; }
-        console.log(semanal);
-    },[semanal]); 
-
     async function getData() {       
 
         const result = await apiRequest('obterrelatorios');
@@ -46,8 +40,9 @@ function Relatorios() {
                 let contador = 0;
                 result.entregues.filter(item => `${moment(item.dataFormat).day(0).format('YYYY-MM-DD')}|${moment(item.dataFormat).day(6).format('YYYY-MM-DD')}` === el).forEach(item => { contador += parseInt(item.valor) });
                 objPedidos = { 
-                    ...objPedidos, 
-                    [el] : contador
+                    [el] : contador,
+                    ...objPedidos
+                    
                 }
             });
 
@@ -150,6 +145,22 @@ function Relatorios() {
                         <div className="semanal">
                             <div>
 
+                                { Object.keys(semanal).map((el, index) => {
+                                    return (
+                                        <div className="item" style={{ width: width - 20 }}>
+                                            <div>
+                                                <div>                                        
+                                                    <h2 class="font-24 line-height-100 primary-color"><small>R$</small> { moneyFormatter(semanal[el]) }</h2>
+                                                    <small class="font-11 line-height-120 default-color-6">
+                                                        <b>{ `${ moment(el.split('|')[0]).format('DD') } à ${ moment(el.split('|')[1]).format('DD') } de ${ moment(el.split('|')[1]).format('MMMM') } de ${ moment(el.split('|')[1]).format('YYYY') }` }</b>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+
+                                { /* }
                                 <div className="item" style={{ width: width - 20 }}>
                                     <div>
                                         <div>                                        
@@ -166,6 +177,7 @@ function Relatorios() {
                                 <div className="item" style={{ width: width - 20 }}>
                                     <div>aaa</div>
                                 </div>
+                                { */ }
 
                             </div>
                         </div>
