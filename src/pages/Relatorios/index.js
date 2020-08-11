@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FiShoppingBag, FiCheckCircle, FiClock } from "react-icons/fi";
 import { MdLocalAtm } from "react-icons/md";
 import { CircularProgress } from '@material-ui/core/';
+
+import moment from 'moment';
+import 'moment/locale/pt-br';
 
 import HeaderComp from '../../components/headerComp';
 
@@ -15,14 +18,43 @@ function Relatorios() {
     const [ pedidos, setPedidos ] = useState(false);
     const [ produtos, setProdutos ] = useState([]);
 
+    const [ semanal, setSemanal ] = useState({});
+
     useEffect(() => {
         getData();
     },[]);
 
+    const refWidth = useRef(true);
+    useEffect(() => {        
+        if (refWidth.current) { refWidth.current = false; return; }
+        console.log(semanal);
+    },[semanal]); 
+
     async function getData() {       
 
         const result = await apiRequest('obterrelatorios');
-        if (result) {            
+        if (result) { 
+            console.log(result);
+            
+            let keysPedidos = [];
+            let objPedidos  = {};
+
+            result.entregues.forEach((el) => {
+                const key = `${moment(el.dataFormat).day(0).format('YYYY-MM-DD')}|${moment(el.dataFormat).day(6).format('YYYY-MM-DD')}`;
+                keysPedidos.filter(i => i === key).length == 0 && keysPedidos.push(key);
+            });
+
+            keysPedidos.forEach((el) => {
+                let contador = 0;
+                result.entregues.filter(item => `${moment(item.dataFormat).day(0).format('YYYY-MM-DD')}|${moment(item.dataFormat).day(6).format('YYYY-MM-DD')}` === el).forEach(item => { contador += parseInt(item.valor) });
+                objPedidos = { 
+                    ...objPedidos, 
+                    [el] : contador
+                }
+            });
+
+            setSemanal(objPedidos);
+            
             existsOrError(result.pedidos) && setPedidos({ ...result.pedidos[0] });
             existsOrError(result.produtos) && setProdutos(result.produtos);
             setPageSkeleton(false);

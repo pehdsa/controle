@@ -373,7 +373,7 @@ function Pedidos() {
         setLoadingEntregue(true);
         const result = await apiRequest('marcardesmarcarcomoentregue', { id: item.id});
         if (result) {
-            const resultKey = `${moment(result.datadefault).day(0).format('YYYY-MM-DD')}|${moment(result.datadefault).day(6).format('YYYY-MM-DD')}`;
+            const resultKey = existsOrError(strSearch) ? 'pedidos' : `${moment(result.datadefault).day(0).format('YYYY-MM-DD')}|${moment(result.datadefault).day(6).format('YYYY-MM-DD')}`;
             const newArr = pedidos[resultKey].map(pedido => pedido.id === item.id ? { ...pedido, entregue: result.entregue } : { ...pedido } ) 
             const newObj = pedidos;
             newObj[resultKey] = newArr;

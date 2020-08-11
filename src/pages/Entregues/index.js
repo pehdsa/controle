@@ -127,8 +127,8 @@ function Pedidos() {
 
                             { pedidos.map((item, index) => {
                                 return ( 
-                                    <li key={ index } className={ `itens-container${(item.entregue !== "0") ? ' desativado' : ''}` } >
-                                        <div className="item">
+                                    <li key={ index } className="itens-container" >
+                                        <div className={ `item${(item.entregue !== "0") ? ' desativado' : ''}` }>
                                         <header className="border-bottom d-flex lista-header justify-content-between align-items-center">
                                             <h2 className="font-13 default-color pl-3">{ item.nome }</h2>
                                             { existsOrError(loadingEntregue) ? (
