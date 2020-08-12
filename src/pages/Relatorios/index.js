@@ -27,7 +27,8 @@ function Relatorios() {
     async function getData() {       
 
         const result = await apiRequest('obterrelatorios');
-        if (result) {             
+        if (result) {     
+                    
             let keysPedidos = [];
             let objPedidos  = {};
 
