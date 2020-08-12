@@ -150,8 +150,8 @@ function Relatorios() {
                                         <div className="item" style={{ width: width - 20 }}>
                                             <div>
                                                 <div>                                        
-                                                    <h2 class="font-24 line-height-100 primary-color"><small>R$</small> { moneyFormatter(semanal[el]) }</h2>
-                                                    <small class="font-11 line-height-120 default-color-6">
+                                                    <h2 className="font-24 line-height-100 primary-color"><small>R$</small> { moneyFormatter(semanal[el]) }</h2>
+                                                    <small className="font-11 line-height-120 default-color-6">
                                                         <b>{ `${ moment(el.split('|')[0]).format('DD') } à ${ moment(el.split('|')[1]).format('DD') } de ${ moment(el.split('|')[1]).format('MMMM') } de ${ moment(el.split('|')[1]).format('YYYY') }` }</b>
                                                     </small>
                                                 </div>
